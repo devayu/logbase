@@ -21,10 +21,15 @@ export const trackEvent = async (
     });
   }
   const { event } = body;
-  const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+  const forwarded = req.headers["x-forwarded-for"];
+  const ip =
+    typeof forwarded === "string"
+      ? forwarded.split(",")[0].trim()
+      : req.socket?.remoteAddress;
+  const cleanIP = ip?.replace(/^::ffff:/, "");
 
   const geo = await fetch(
-    `https://ipinfo.io/${ip}?token=${process.env.IP_INFO_API_KEY}`
+    `https://ipinfo.io/${cleanIP}?token=${process.env.IP_INFO_API_KEY}`
   );
   const data = (await geo.json()) as Record<string, any>;
 
