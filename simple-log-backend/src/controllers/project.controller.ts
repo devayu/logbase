@@ -26,10 +26,7 @@ export const verifyProjectKey = async (
     canAutoTrackEvents: project[0].projectPlan === "PREMIUM",
   });
 };
-export const getProjects = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const getProjects = async (_: Request, res: Response): Promise<void> => {
   try {
     res.status(200).json({
       status: "ok",

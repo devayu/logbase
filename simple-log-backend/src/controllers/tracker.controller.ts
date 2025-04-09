@@ -26,7 +26,7 @@ export const trackEvent = async (
   const geo = await fetch(
     `https://ipinfo.io/${ip}?token=${process.env.IP_INFO_API_KEY}`
   );
-  const data = await geo.json();
+  const data = (await geo.json()) as Record<string, any>;
 
   console.log(ip, data.city, data.region, data.country);
 

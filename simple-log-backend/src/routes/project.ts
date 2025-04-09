@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { getHealth } from "../controllers/health.controller";
 import { randomBytes } from "crypto";
 
 import {
@@ -17,7 +16,7 @@ const router = Router();
 
 router.get("/getProjects", getProjects);
 router.get("/verifyProjectKey", authenticateProject, verifyProjectKey);
-router.get("/genereteClient", (req, res) => {
+router.get("/genereteClient", (_, res) => {
   const auth_token = jwt.sign(
     { client_id: randomBytes(32).toString("hex") },
     process.env.JWT_SECRET!!
