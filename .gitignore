@@ -19,5 +19,8 @@ simple-log-sdk/.env
 **/.env.production
 
 # Ignore build outputs
+simple-log-backend/dist/
+simple-log-frontend/dist/
+simple-log-sdk/dist/
 **/dist/
 **/build/
