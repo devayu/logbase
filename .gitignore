@@ -1,5 +1,8 @@
 # Ignore node_modules directories
-**/node_modules/
+node_modules/
+simple-log-backend/node_modules/
+simple-log-frontend/node_modules/
+simple-log-sdk/node_modules/
 
 # Ignore logs
 logs/
