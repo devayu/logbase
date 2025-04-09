@@ -10,6 +10,13 @@ logs/
 
 # Ignore environment variables
 .env
+simple-log-backend/.env
+simple-log-frontend/.env
+simple-log-sdk/.env
+**/.env.local
+**/.env.development
+**/.env.test
+**/.env.production
 
 # Ignore build outputs
 **/dist/
