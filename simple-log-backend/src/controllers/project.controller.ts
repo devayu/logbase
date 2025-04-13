@@ -1,10 +1,9 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { db } from "../db";
 import { eventsTable, projectsTable } from "../db/schema";
 import { AuthRequest } from "../middleware/authentication.middleware";
 import { generateApiKey } from "../utils/apiKeys";
 import { and, eq } from "drizzle-orm";
-import { create } from "lodash";
 
 export const verifyProjectKey = async (
   req: AuthRequest,
