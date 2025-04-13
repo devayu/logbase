@@ -13,6 +13,7 @@ export const projectPlanEnum = pgEnum("project_plan", ["BASIC", "PREMIUM"]);
 export const projectsTable = pgTable("projects", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   name: varchar({ length: 255 }).notNull(),
+  description: varchar({ length: 255 }),
   client_id: varchar({ length: 64 }),
   api_key: varchar({ length: 100 }).unique().default("").notNull(),
   status: projectStatusEnum("status").notNull().default("ACTIVE"),

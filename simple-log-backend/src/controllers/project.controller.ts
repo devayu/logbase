@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import { db } from "../db";
-import { projectsTable } from "../db/schema";
+import { eventsTable, projectsTable } from "../db/schema";
 import { AuthRequest } from "../middleware/authentication.middleware";
 import { generateApiKey } from "../utils/apiKeys";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
+import { create } from "lodash";
 
 export const verifyProjectKey = async (
   req: AuthRequest,
@@ -26,22 +27,32 @@ export const verifyProjectKey = async (
     canAutoTrackEvents: project[0].projectPlan === "PREMIUM",
   });
 };
-export const getProjects = async (_: Request, res: Response): Promise<void> => {
-  try {
-    res.status(200).json({
-      status: "ok",
-      timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-    });
-  } catch (error) {
-    res.status(500).json({
+export const getProjects = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
+  if (!req.client_id) {
+    res.status(401).json({
       status: "error",
-      message: "Internal server error",
+      message: "Invalid request client id is missing",
     });
   }
+  const { client_id } = req;
+  const projects = await db
+    .select({
+      id: projectsTable.id,
+      description: projectsTable.description,
+      name: projectsTable.name,
+      plan: projectsTable.plan,
+      createdAt: projectsTable.created_at,
+      status: projectsTable.status,
+    })
+    .from(projectsTable)
+    .where(eq(projectsTable.client_id, client_id as string));
+  res.status(200).json(projects);
 };
 
-export const registerProject = async (
+export const createProject = async (
   req: AuthRequest,
   res: Response
 ): Promise<void> => {
@@ -58,12 +69,13 @@ export const registerProject = async (
       message: "Invalid request client id is missing",
     });
   }
-  const { projectName } = body;
+  const { projectName, description } = body;
   const project = await db.transaction(async (tx) => {
     const [newProject] = await tx
       .insert(projectsTable)
       .values({
         name: projectName,
+        description: description,
         client_id: req.client_id as string,
       })
       .returning();
@@ -84,4 +96,55 @@ export const registerProject = async (
     status: "ok",
     project,
   });
+};
+
+export const deleteProject = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
+  const { body } = req;
+  if (!body || !body.projectId) {
+    res.status(403).json({
+      status: "error",
+      message: "Invalid request",
+    });
+  }
+  if (!req.client_id) {
+    res.status(401).json({
+      status: "error",
+      message: "Invalid request client id is missing",
+    });
+  }
+  const { projectId } = body;
+  const project = await db.transaction(async (tx) => {
+    await tx
+      .delete(eventsTable)
+      .where(eq(eventsTable.project_id, projectId as number));
+
+    const projectDeleted = await tx
+      .delete(projectsTable)
+      .where(
+        and(
+          eq(projectsTable.client_id, req.client_id as string),
+          eq(projectsTable.id, projectId as number)
+        )
+      );
+
+    if (projectDeleted.count === 0) {
+      return {
+        status: "error",
+        message: "Unable to delete project",
+      };
+    }
+
+    return {
+      status: "ok",
+    };
+  });
+
+  if (project.status === "ok") {
+    res.status(200).json(project);
+  } else {
+    res.status(500).json(project);
+  }
 };

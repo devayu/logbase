@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { randomBytes } from "crypto";
 
 import {
   getProjects,
-  registerProject,
+  createProject,
   verifyProjectKey,
+  deleteProject,
 } from "../controllers/project.controller";
 import {
   authenticateProject,
@@ -14,14 +14,15 @@ import jwt from "jsonwebtoken";
 
 const router = Router();
 
-router.get("/getProjects", getProjects);
+router.get("/getProjects", authenticateToken, getProjects);
 router.get("/verifyProjectKey", authenticateProject, verifyProjectKey);
-router.get("/genereteClient", (_, res) => {
+router.get("/generateClient", (req, res) => {
   const auth_token = jwt.sign(
-    { client_id: randomBytes(32).toString("hex") },
+    { client_id: req.body.client_id },
     process.env.JWT_SECRET!!
   );
   res.json({ auth_token });
 });
-router.post("/createProject", authenticateToken, registerProject);
+router.post("/createProject", authenticateToken, createProject);
+router.delete("/deleteProject", authenticateToken, deleteProject);
 export default router;
