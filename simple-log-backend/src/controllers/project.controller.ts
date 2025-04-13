@@ -3,7 +3,7 @@ import { db } from "../db";
 import { eventsTable, projectsTable } from "../db/schema";
 import { AuthRequest } from "../middleware/authentication.middleware";
 import { generateApiKey } from "../utils/apiKeys";
-import { and, asc, desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 
 export const verifyProjectKey = async (
   req: AuthRequest,
