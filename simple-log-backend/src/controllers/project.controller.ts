@@ -3,7 +3,7 @@ import { db } from "../db";
 import { eventsTable, projectsTable } from "../db/schema";
 import { AuthRequest } from "../middleware/authentication.middleware";
 import { generateApiKey } from "../utils/apiKeys";
-import { and, eq } from "drizzle-orm";
+import { and, asc, desc, eq } from "drizzle-orm";
 
 export const verifyProjectKey = async (
   req: AuthRequest,
@@ -47,7 +47,8 @@ export const getProjects = async (
       status: projectsTable.status,
     })
     .from(projectsTable)
-    .where(eq(projectsTable.client_id, client_id as string));
+    .where(eq(projectsTable.client_id, client_id as string))
+    .orderBy(desc(projectsTable.created_at));
   res.status(200).json(projects);
 };
 

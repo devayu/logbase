@@ -1,4 +1,3 @@
-
 // In a real app, this would interact with a backend API
 // Currently using mock data for demo purposes
 
@@ -8,6 +7,7 @@ export interface Event {
   source: string;
   path: string;
   timestamp: string;
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   properties: Record<string, any>;
 }
 

@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,9 +15,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/hooks/use-toast";
 
 import { loginUser, registerUser } from "@/services/auth";
 
@@ -32,8 +36,8 @@ type AuthFormValues = z.infer<typeof authSchema>;
 export const AuthForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { toast } = useToast();
-  const navigate = useNavigate();
+  const { toast } = { toast: ({}) => {} }; // TODO: add toast component {t};
+  const navigate = useRouter();
 
   const form = useForm<AuthFormValues>({
     resolver: zodResolver(authSchema),
@@ -49,7 +53,7 @@ export const AuthForm = () => {
       if (isRegister) {
         await registerUser({
           email: values.email,
-          password: values.password
+          password: values.password,
         });
         toast({
           title: "Registration successful!",
@@ -58,15 +62,15 @@ export const AuthForm = () => {
       } else {
         await loginUser({
           email: values.email,
-          password: values.password
+          password: values.password,
         });
         toast({
           title: "Login successful!",
           description: "Welcome back to App Insight Central.",
         });
-        navigate("/dashboard");
+        navigate.push("/dashboard");
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Authentication error",
         description: "Please check your credentials and try again.",

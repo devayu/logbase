@@ -1,10 +1,14 @@
-
 import { useState } from "react";
 import { Copy, EyeOff, Eye, RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 import { regenerateApiKey } from "@/services/apiKey";
 
@@ -12,10 +16,12 @@ interface ApiKeyCardProps {
   apiKey?: string;
 }
 
-export const ApiKeyCard = ({ apiKey = "sk_test_12345678901234567890" }: ApiKeyCardProps) => {
+export const ApiKeyCard = ({
+  apiKey = "sk_test_12345678901234567890",
+}: ApiKeyCardProps) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
-  const { toast } = useToast();
+  const { toast } = { toast: ({}) => {} };
 
   const toggleVisibility = () => setIsVisible(!isVisible);
 
@@ -35,7 +41,7 @@ export const ApiKeyCard = ({ apiKey = "sk_test_12345678901234567890" }: ApiKeyCa
         title: "API Key regenerated",
         description: "Your new API key has been generated successfully.",
       });
-    } catch (error) {
+    } catch {
       toast({
         title: "Failed to regenerate API Key",
         description: "Please try again later.",
@@ -53,9 +59,7 @@ export const ApiKeyCard = ({ apiKey = "sk_test_12345678901234567890" }: ApiKeyCa
   return (
     <Card className="card-gradient overflow-hidden border border-border/30">
       <CardHeader>
-        <CardTitle className="text-lg font-medium">
-          API Key
-        </CardTitle>
+        <CardTitle className="text-lg font-medium">API Key</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col items-start gap-2">
@@ -78,7 +82,8 @@ export const ApiKeyCard = ({ apiKey = "sk_test_12345678901234567890" }: ApiKeyCa
             </Button>
           </div>
           <p className="text-xs text-muted-foreground mt-1">
-            Use this API key to initialize the SDK in your application. Keep this key secure.
+            Use this API key to initialize the SDK in your application. Keep
+            this key secure.
           </p>
         </div>
       </CardContent>
@@ -93,7 +98,9 @@ export const ApiKeyCard = ({ apiKey = "sk_test_12345678901234567890" }: ApiKeyCa
           onClick={handleRegenerateKey}
           disabled={isRegenerating}
         >
-          <RefreshCw className={`mr-2 h-4 w-4 ${isRegenerating ? "animate-spin" : ""}`} />
+          <RefreshCw
+            className={`mr-2 h-4 w-4 ${isRegenerating ? "animate-spin" : ""}`}
+          />
           Regenerate
         </Button>
       </CardFooter>

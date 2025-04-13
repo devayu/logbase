@@ -1,25 +1,16 @@
 import { NewProjectCard } from "@/components/projects/NewProjectCard";
 import ProjectCards from "@/components/projects/ProjectCards";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
+
 import { getProjects } from "@/services/projects";
 import { Loader2 } from "lucide-react";
 
 export default async function Home() {
-  // const projects = (await getProjects()) || [];
-  const {
-    data: projects,
-    isLoading,
-    error,
-  } = (await getProjects()) || { data: [], isLoading: false, error: null };
+  const { data: projects, isLoading } = (await getProjects()) || {
+    data: [],
+    isLoading: false,
+    error: null,
+  };
 
-  console.log(isLoading);
   //   {
   //     name: "Page A",
   //     description: "Page A description",

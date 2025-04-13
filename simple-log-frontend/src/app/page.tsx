@@ -75,7 +75,6 @@ export default function Home() {
               <div className="space-y-2">
                 <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
                   Insight into Your{" "}
-                  <span className="gradient-text">App's Performance</span>
                 </h1>
                 <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
                   Track, analyze, and optimize your application with our

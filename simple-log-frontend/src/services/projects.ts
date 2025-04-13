@@ -11,6 +11,7 @@ export interface Event {
   id: number;
   event: string;
   timestamp: string;
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   metadata: Record<string, any>;
 }
 

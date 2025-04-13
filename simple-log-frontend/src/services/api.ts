@@ -96,6 +96,7 @@ export class Api {
     endpoint: string,
     options?: RequestInit
   ): Promise<ApiState<T>> {
+    /* eslint-disable prefer-const */
     let state: ApiState<T> = {
       data: null,
       error: null,

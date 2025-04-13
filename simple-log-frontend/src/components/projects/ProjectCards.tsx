@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Ellipsis, Loader2 } from "lucide-react";
+import { Ellipsis } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,6 +21,7 @@ import { createDeleteProjectMutation, Project } from "@/services/projects";
 import DeleteConfirmationDialog, {
   DeleteDialogState,
 } from "@/components/projects/DeleteProjectDialog";
+import { formatDate } from "@/lib/utils";
 
 export const ProjectCards = ({ projects }: { projects: Project[] | null }) => {
   const router = useRouter();
@@ -119,7 +120,9 @@ const ProjectCard = ({
       <CardDescription>{description}</CardDescription>
     </CardContent>
     <CardFooter className="flex justify-between border-t pt-3!">
-      <span className="text-xs text-muted-foreground">Created {createdAt}</span>
+      <span className="text-xs text-muted-foreground">
+        Created {formatDate(createdAt, true)}
+      </span>
     </CardFooter>
   </Card>
 );

@@ -1,4 +1,3 @@
-
 // This would be replaced with actual authentication logic
 // Currently using mock data for demo purposes
 
@@ -11,7 +10,9 @@ interface AuthCredentials {
 }
 
 // Mock function to simulate user registration
-export const registerUser = async (credentials: AuthCredentials): Promise<void> => {
+export const registerUser = async (
+  credentials: AuthCredentials
+): Promise<void> => {
   // In a real app, this would make an API request to register the user
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -23,9 +24,11 @@ export const registerUser = async (credentials: AuthCredentials): Promise<void> 
 };
 
 // Mock function to simulate user login
-export const loginUser = async (credentials: AuthCredentials): Promise<void> => {
+export const loginUser = async (
+  credentials: AuthCredentials
+): Promise<void> => {
   // In a real app, this would make an API request to authenticate the user
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     setTimeout(() => {
       // Simulate successful login
       currentUser = { email: credentials.email };
@@ -46,13 +49,13 @@ export const logoutUser = (): void => {
 // Mock function to check if a user is logged in
 export const getCurrentUser = (): { email: string } | null => {
   if (currentUser) return currentUser;
-  
+
   const storedUser = localStorage.getItem("user");
   if (storedUser) {
     currentUser = JSON.parse(storedUser);
     return currentUser;
   }
-  
+
   return null;
 };
 
