@@ -21,7 +21,7 @@ export class Api {
 
   private constructor() {
     this.baseUrl =
-      process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3090";
+      process.env.NEXT_PUBLIC_SIMPLE_LOG_URL || "http://localhost:3090";
   }
 
   public static getInstance(): Api {
