@@ -45,29 +45,6 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 max-w-screen-2xl items-center">
-          <div className="flex items-center gap-2 mr-4">
-            <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
-              <BarChart2 className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="text-lg font-bold gradient-text">
-              App Insight Central
-            </span>
-          </div>
-          <nav className="flex flex-1 items-center justify-end space-x-2">
-            <Button variant="ghost" onClick={() => router.push("/auth")}>
-              Log in
-            </Button>
-            <Button
-              onClick={() => router.push("/auth?tab=register")}
-              className="btn-glow"
-            >
-              Sign up
-            </Button>
-          </nav>
-        </div>
-      </header>
       <main className="flex-1">
         <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-br from-background via-background to-accent/30">
           <div className="container px-4 md:px-6">

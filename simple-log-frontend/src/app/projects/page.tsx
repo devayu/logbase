@@ -1,42 +1,12 @@
 import { NewProjectCard } from "@/components/projects/NewProjectCard";
 import ProjectCards from "@/components/projects/ProjectCards";
-
-import { getProjects } from "@/services/projects";
+import { getServerProjects } from "@/hooks/useProjects";
 import { Loader2 } from "lucide-react";
 
+export const revalidate = 0;
+export const dynamic = "force-dynamic";
 export default async function Home() {
-  const { data: projects, isLoading } = (await getProjects()) || {
-    data: [],
-    isLoading: false,
-    error: null,
-  };
-
-  //   {
-  //     name: "Page A",
-  //     description: "Page A description",
-  //     createdAt: "2021-01-01",
-  //   },
-  //   {
-  //     name: "Page A",
-  //     description: "Page A description",
-  //   },
-  //   {
-  //     name: "Page A",
-  //     description: "Page A description",
-  //   },
-  //   {
-  //     name: "Page A",
-  //     description: "Page A description",
-  //   },
-  //   {
-  //     name: "Page A",
-  //     description: "Page A description",
-  //   },
-  //   {
-  //     name: "Page A",
-  //     description: "Page A description",
-  //   },
-  // ];
+  const { data: projects, isLoading } = await getServerProjects();
   return (
     <div className="p-5">
       <h1 className="text-xl font-bold mb-2">Projects</h1>

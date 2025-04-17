@@ -17,11 +17,13 @@ const token =
 
 export class Api {
   private static instance: Api;
-  private baseUrl: string;
+  public baseUrl: string;
+  public token: string;
 
   private constructor() {
     this.baseUrl =
       process.env.NEXT_PUBLIC_SIMPLE_LOG_URL || "http://localhost:3090";
+    this.token = token;
   }
 
   public static getInstance(): Api {
@@ -106,7 +108,6 @@ export class Api {
       const response = await fetch(`${this.baseUrl}${endpoint}`, {
         ...options,
         method: "GET",
-
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,

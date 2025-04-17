@@ -18,6 +18,7 @@ export const projectsTable = pgTable("projects", {
   api_key: varchar({ length: 100 }).unique().default("").notNull(),
   status: projectStatusEnum("status").notNull().default("ACTIVE"),
   created_at: timestamp().defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
   plan: projectPlanEnum("plan").notNull().default("BASIC"),
 });
 

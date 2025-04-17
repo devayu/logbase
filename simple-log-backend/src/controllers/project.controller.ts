@@ -44,6 +44,7 @@ export const getProjects = async (
       name: projectsTable.name,
       plan: projectsTable.plan,
       createdAt: projectsTable.created_at,
+      updatedAt: projectsTable.updated_at,
       status: projectsTable.status,
     })
     .from(projectsTable)
@@ -51,7 +52,91 @@ export const getProjects = async (
     .orderBy(desc(projectsTable.created_at));
   res.status(200).json(projects);
 };
+export const getProject = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
+  const project_id = Number(req.params.id);
+  if (isNaN(project_id)) {
+    res.status(403).json({
+      status: "error",
+      message: "Invalid request",
+    });
+    return;
+  }
+  if (!req.client_id && !project_id) {
+    res.status(401).json({
+      status: "error",
+      message: "Invalid request client id is missing",
+    });
+  }
+  const { client_id } = req;
+  const [project] = await db
+    .select({
+      id: projectsTable.id,
+      description: projectsTable.description,
+      name: projectsTable.name,
+      plan: projectsTable.plan,
+      createdAt: projectsTable.created_at,
+      updatedAt: projectsTable.updated_at,
+      status: projectsTable.status,
+      apiKey: projectsTable.api_key,
+    })
+    .from(projectsTable)
+    .where(
+      and(
+        eq(projectsTable.client_id, client_id as string),
+        eq(projectsTable.id, project_id as number)
+      )
+    )
+    .orderBy(desc(projectsTable.created_at));
+  res.status(200).json(project);
+};
+export const updateProjectKey = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
+  const { body } = req;
+  if (!body || !body.projectId) {
+    res.status(403).json({
+      status: "error",
+      message: "Invalid request",
+    });
+    return;
+  }
+  if (!req.client_id) {
+    res.status(401).json({
+      status: "error",
+      message: "Invalid request client id is missing",
+    });
+    return;
+  }
+  const { projectId } = body;
+  const updatedKey = generateApiKey();
+  const projectUpdated = await db
+    .update(projectsTable)
+    .set({
+      api_key: updatedKey,
+      updated_at: new Date(),
+    })
+    .where(
+      and(
+        eq(projectsTable.client_id, req.client_id as string),
+        eq(projectsTable.id, projectId as number)
+      )
+    );
 
+  if (projectUpdated.count === 0) {
+    res.status(500).json({
+      status: "error",
+      message: "Unable to generate key api key",
+    });
+    return;
+  }
+  res.status(200).json({
+    status: "ok",
+  });
+};
 export const createProject = async (
   req: AuthRequest,
   res: Response
@@ -92,10 +177,7 @@ export const createProject = async (
       api_key: apiKey,
     };
   });
-  res.status(200).json({
-    status: "ok",
-    project,
-  });
+  res.status(200).json(project);
 };
 
 export const deleteProject = async (
@@ -147,4 +229,46 @@ export const deleteProject = async (
   } else {
     res.status(500).json(project);
   }
+};
+
+export const toggleProjectStatus = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
+  const { body } = req;
+  if (!body || !body.projectId) {
+    res.status(403).json({
+      status: "error",
+      message: "Invalid request",
+    });
+  }
+  if (!req.client_id) {
+    res.status(401).json({
+      status: "error",
+      message: "Invalid request client id is missing",
+    });
+  }
+  const { projectId, status } = body;
+  const projectUpdated = await db
+    .update(projectsTable)
+    .set({
+      status: status === "PAUSED" ? "ACTIVE" : "PAUSED",
+      updated_at: new Date(),
+    })
+    .where(
+      and(
+        eq(projectsTable.client_id, req.client_id as string),
+        eq(projectsTable.id, projectId as number)
+      )
+    );
+
+  if (projectUpdated.count === 0) {
+    res.status(500).json({
+      status: "error",
+      message: "Unable to delete project",
+    });
+  }
+  res.status(200).json({
+    status: "ok",
+  });
 };

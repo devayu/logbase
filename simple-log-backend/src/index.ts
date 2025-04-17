@@ -1,21 +1,23 @@
 import dotenv from "dotenv";
 import app from "./app";
-import heathRoute from "./routes/health";
-import projectRoute from "./routes/project";
-import trackerRouter from "./routes/tracker";
+import healthRouter from "./routes/health.route";
+import projectRouter from "./routes/project.route";
+import trackerRouter from "./routes/tracker.route";
 import cors from "cors";
 dotenv.config();
 const PORT = process.env.PORT || 3090;
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: true,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-app.use(heathRoute);
-app.use(projectRoute);
+
+app.use(healthRouter);
+app.use(projectRouter);
 app.use(trackerRouter);
 app.listen(PORT, () => {
   console.log(`Listening on PORT: ${PORT}`);

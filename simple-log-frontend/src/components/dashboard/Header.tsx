@@ -38,7 +38,7 @@ export const Header = ({ email = "user@example.com" }: HeaderProps) => {
   };
 
   const navItems = [
-    { icon: BarChart2, label: "Dashboard", href: "/dashboard" },
+    { icon: BarChart2, label: "Projects", href: "/projects" },
     { icon: Bell, label: "Notifications", href: "/notifications" },
     { icon: Settings, label: "Settings", href: "/settings" },
   ];

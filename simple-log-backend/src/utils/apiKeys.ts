@@ -2,7 +2,7 @@ import crypto from "crypto";
 
 export function generateApiKey(): string {
   const prefix = "sl";
-  const randomPart = crypto.randomBytes(32).toString("hex"); // 64 chars
+  const randomPart = crypto.randomBytes(8).toString("hex"); // 64 chars
   const timestamp = Math.floor(Date.now() / 1000); // Unix time in seconds
 
   return `${prefix}_${randomPart}_${timestamp}`;

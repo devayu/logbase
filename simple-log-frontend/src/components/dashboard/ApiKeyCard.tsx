@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Copy, EyeOff, Eye, RefreshCw } from "lucide-react";
+import { Copy, Eye, EyeOff, RefreshCw } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -10,45 +10,51 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { regenerateApiKey } from "@/services/apiKey";
+import { useUpdateProjectKey } from "@/hooks/useProjects";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface ApiKeyCardProps {
   apiKey?: string;
+  projectId?: number;
 }
 
 export const ApiKeyCard = ({
   apiKey = "sk_test_12345678901234567890",
+  projectId,
 }: ApiKeyCardProps) => {
+  const router = useRouter();
+  const { isLoading, updateProjectKey, error } = useUpdateProjectKey();
+
   const [isVisible, setIsVisible] = useState(false);
-  const [isRegenerating, setIsRegenerating] = useState(false);
-  const { toast } = { toast: ({}) => {} };
 
   const toggleVisibility = () => setIsVisible(!isVisible);
 
   const handleCopyApiKey = () => {
     navigator.clipboard.writeText(apiKey);
-    toast({
-      title: "API Key copied",
+    toast("API Key copied", {
       description: "The API key has been copied to your clipboard.",
     });
   };
 
+  useEffect(() => {
+    if (error) {
+      toast.error("Failed to regenerate API Key", {
+        description: "Please try again later.",
+      });
+    }
+  }, [error]);
+
   const handleRegenerateKey = async () => {
-    setIsRegenerating(true);
-    try {
-      await regenerateApiKey();
-      toast({
-        title: "API Key regenerated",
+    if (!projectId) return;
+    const res = await updateProjectKey({
+      projectId,
+    });
+    if (res?.status === "ok") {
+      router.refresh();
+      toast("API Key regenerated", {
         description: "Your new API key has been generated successfully.",
       });
-    } catch {
-      toast({
-        title: "Failed to regenerate API Key",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsRegenerating(false);
     }
   };
 
@@ -57,7 +63,7 @@ export const ApiKeyCard = ({
     : apiKey.substring(0, 3) + "•".repeat(apiKey.length - 6) + apiKey.slice(-3);
 
   return (
-    <Card className="card-gradient overflow-hidden border border-border/30">
+    <Card className="col-span-4 card-gradient overflow-hidden border border-border/30">
       <CardHeader>
         <CardTitle className="text-lg font-medium">API Key</CardTitle>
       </CardHeader>
@@ -96,10 +102,10 @@ export const ApiKeyCard = ({
           variant="outline"
           size="sm"
           onClick={handleRegenerateKey}
-          disabled={isRegenerating}
+          disabled={isLoading}
         >
           <RefreshCw
-            className={`mr-2 h-4 w-4 ${isRegenerating ? "animate-spin" : ""}`}
+            className={`mr-2 h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
           />
           Regenerate
         </Button>

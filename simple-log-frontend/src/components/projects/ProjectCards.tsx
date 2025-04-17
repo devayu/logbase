@@ -1,15 +1,15 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Ellipsis } from "lucide-react";
+import DeleteConfirmationDialog, {
+  DeleteDialogState,
+} from "@/components/projects/DeleteProjectDialog";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardHeader,
-  CardTitle,
   CardContent,
   CardDescription,
   CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import {
   DropdownMenu,
@@ -17,48 +17,58 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { createDeleteProjectMutation, Project } from "@/services/projects";
-import DeleteConfirmationDialog, {
-  DeleteDialogState,
-} from "@/components/projects/DeleteProjectDialog";
-import { formatDate } from "@/lib/utils";
+import { Project, useToggleProjectStatus } from "@/hooks/useProjects";
+import { cn, formatDate } from "@/lib/utils";
+import {
+  ArchiveX,
+  Ellipsis,
+  FileDownIcon,
+  PauseIcon,
+  PlayIcon,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export const ProjectCards = ({ projects }: { projects: Project[] | null }) => {
   const router = useRouter();
-  const [mutationState, setMutationState] = useState({
-    isLoading: createDeleteProjectMutation.isLoading,
-    error: createDeleteProjectMutation.error,
-  });
+  const { toggleProjectStatus } = useToggleProjectStatus();
   const [deleteDialog, setDeleteDialog] = useState<DeleteDialogState>({
     id: null,
     open: false,
   });
-  const [confirmationName, setConfirmationName] = useState("");
-
-  useEffect(() => {
-    const unsubscribe = createDeleteProjectMutation.subscribe((state) => {
-      setMutationState({ isLoading: state.isLoading, error: state.error });
-    });
-    return unsubscribe;
-  }, []);
 
   const handleProjectClick = (projectId: number) => {
-    console.log("Project clicked", projectId);
+    router.push(`/dashboard/${projectId}`);
   };
 
-  const handleDeleteProject = async (projectId: number | null) => {
-    if (!projectId || deleteDialog.projectName !== confirmationName) return;
+  const handleProjectPause = async (
+    projectId: number | null,
+    status: "PAUSED" | "ACTIVE"
+  ) => {
+    if (!projectId) return;
 
-    const res = await createDeleteProjectMutation.trigger({ projectId });
-    if (res?.status === "ok") {
-      resetDeleteDialog();
-      router.refresh();
-    }
+    toast.promise(
+      toggleProjectStatus({
+        projectId,
+        status,
+      }),
+      {
+        loading: `${status === "PAUSED" ? "Resuming" : "Pausing"} project...`,
+        success: () => {
+          router.refresh();
+          return `Project ${
+            status === "PAUSED" ? "resumed" : "paused"
+          } successfully!`;
+        },
+        error:
+          "An error occurred while toggling project status. Please try again later.",
+      }
+    );
   };
 
   const resetDeleteDialog = () => {
     setDeleteDialog({ id: null, open: false, projectName: "" });
-    setConfirmationName("");
   };
 
   const openDeleteDialog = (id: number, name: string) => {
@@ -67,24 +77,30 @@ export const ProjectCards = ({ projects }: { projects: Project[] | null }) => {
 
   return (
     <>
-      {projects?.map(({ id, name, description, createdAt }) => (
-        <ProjectCard
-          key={id}
-          id={id}
-          name={name}
-          description={description}
-          createdAt={createdAt}
-          onProjectClick={handleProjectClick}
-          onDeleteClick={openDeleteDialog}
-        />
-      ))}
+      {projects?.map(
+        ({ id, name, description, createdAt, status, plan, updatedAt }) => (
+          <ProjectCard
+            key={id}
+            id={id}
+            name={name}
+            description={description}
+            createdAt={createdAt}
+            status={status}
+            updatedAt={updatedAt}
+            plan={plan}
+            onProjectClick={handleProjectClick}
+            onDeleteClick={openDeleteDialog}
+            onProjectPause={handleProjectPause}
+          />
+        )
+      )}
       <DeleteConfirmationDialog
         deleteDialog={deleteDialog}
-        confirmationName={confirmationName}
-        setConfirmationName={setConfirmationName}
+        onSuccess={() => {
+          resetDeleteDialog();
+          router.refresh();
+        }}
         onClose={resetDeleteDialog}
-        onConfirm={() => handleDeleteProject(deleteDialog.id)}
-        isLoading={mutationState.isLoading}
         onOpenChange={(open) => setDeleteDialog((prev) => ({ ...prev, open }))}
       />
     </>
@@ -94,52 +110,158 @@ export const ProjectCards = ({ projects }: { projects: Project[] | null }) => {
 interface ProjectCardProps {
   id: number;
   name: string;
+  status: "ACTIVE" | "PAUSED";
+  plan: "BASIC" | "PREMIUM";
   description: string;
   createdAt: string;
+  updatedAt: string;
   onProjectClick: (id: number) => void;
+  onProjectPause: (id: number, status: ProjectCardProps["status"]) => void;
   onDeleteClick: (id: number, name: string) => void;
 }
 
+const dropdownItems = [
+  {
+    label: "Pause Project",
+    action: () => {},
+    icon: PauseIcon,
+  },
+  {
+    label: "Export data",
+    action: () => {},
+  },
+  {
+    label: "Delete Project",
+    className: "text-destructive",
+    action: () => {},
+  },
+];
 const ProjectCard = ({
   id,
   name,
   description,
+  status,
+  plan,
   createdAt,
+  updatedAt,
   onProjectClick,
+  onProjectPause,
   onDeleteClick,
 }: ProjectCardProps) => (
   <Card
-    className="border border-border/30 py-3 cursor-pointer"
+    className={cn(
+      "border border-border/30 py-3 cursor-pointer relative gap-3 transition-all duration-200 hover:border-border hover:shadow-md hover:scale-[1.01]",
+      status === "PAUSED" && [
+        "opacity-90",
+        "after:absolute",
+        "after:inset-0",
+        "after:bg-[linear-gradient(45deg,transparent_40%,#00000009_40%,#00000009_60%,transparent_60%)]",
+        "after:bg-[length:8px_8px]",
+        "after:pointer-events-none",
+        "after:border-t after:border-border/30",
+      ]
+    )}
     onClick={() => onProjectClick(id)}
   >
     <CardHeader className="flex justify-between items-center">
       <CardTitle>{name}</CardTitle>
-      <ProjectMenu onDelete={() => onDeleteClick(id, name)} />
+      <ProjectMenu
+        plan={plan}
+        status={status}
+        dropdownItems={dropdownItems}
+        onDelete={() => onDeleteClick(id, name)}
+        onPause={() => onProjectPause(id, status)}
+      />
     </CardHeader>
     <CardContent>
       <CardDescription>{description}</CardDescription>
     </CardContent>
-    <CardFooter className="flex justify-between border-t pt-3!">
-      <span className="text-xs text-muted-foreground">
-        Created {formatDate(createdAt, true)}
-      </span>
+    <CardFooter className="flex justify-between items-end border-t pt-3!">
+      <div className="flex flex-col">
+        {createdAt === updatedAt ? (
+          <span className="text-sm text-muted-foreground">
+            Created {formatDate(createdAt, true)}
+          </span>
+        ) : (
+          <>
+            <span className="text-sm text-muted-foreground">
+              Updated {formatDate(updatedAt, true)}
+            </span>
+            <span className="text-xs text-muted-foreground/70">
+              Created {formatDate(createdAt)}
+            </span>
+          </>
+        )}
+      </div>
+      {status === "PAUSED" && (
+        <span className="text-xs flex items-center gap-1 text-yellow-600/70">
+          <PauseIcon className="h-3 w-3" />
+          Paused
+        </span>
+      )}
     </CardFooter>
   </Card>
 );
 
-const ProjectMenu = ({ onDelete }: { onDelete: () => void }) => (
+type DropdownMenuItems = {
+  label: string;
+  action: () => void;
+  icon?: React.ElementType;
+  className?: string; // Add className prop for additional styling if needed
+};
+
+const ProjectMenu = ({
+  status,
+  plan,
+  onDelete,
+  onPause,
+  dropdownItems,
+}: {
+  status: "ACTIVE" | "PAUSED";
+  plan: "BASIC" | "PREMIUM";
+  onDelete: () => void;
+  onPause: () => void;
+  dropdownItems: DropdownMenuItems[];
+}) => (
   <DropdownMenu>
-    <DropdownMenuTrigger asChild className="cursor-pointer">
+    <DropdownMenuTrigger
+      asChild
+      className="cursor-pointer"
+      onClick={(e) => e.stopPropagation()}
+    >
       <Button variant="ghost" size="icon">
         <Ellipsis className="h-[1.2rem] w-[1.2rem]" />
         <span className="sr-only">Project settings</span>
       </Button>
     </DropdownMenuTrigger>
-    <DropdownMenuContent align="start">
+    <DropdownMenuContent align="start" onClick={(e) => e.stopPropagation()}>
+      <DropdownMenuItem
+        onClick={(e) => {
+          e.stopPropagation();
+          onPause();
+        }}
+      >
+        {status === "ACTIVE" ? <PauseIcon></PauseIcon> : <PlayIcon></PlayIcon>}
+        {status === "ACTIVE" ? "Pause Project" : "Resume Project"}
+      </DropdownMenuItem>
+      <DropdownMenuItem
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete();
+        }}
+        disabled={plan === "BASIC"}
+      >
+        <FileDownIcon></FileDownIcon>
+        {`Export Data ${plan === "BASIC" ? "(Premium)" : ""}`}
+      </DropdownMenuItem>
       <DropdownMenuItem
         className="text-destructive cursor-pointer"
-        onClick={onDelete}
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete();
+        }}
       >
+        <ArchiveX></ArchiveX>
         Delete Project
       </DropdownMenuItem>
     </DropdownMenuContent>

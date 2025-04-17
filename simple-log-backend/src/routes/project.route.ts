@@ -5,6 +5,9 @@ import {
   createProject,
   verifyProjectKey,
   deleteProject,
+  toggleProjectStatus,
+  getProject,
+  updateProjectKey,
 } from "../controllers/project.controller";
 import {
   authenticateProject,
@@ -15,6 +18,8 @@ import jwt from "jsonwebtoken";
 const router = Router();
 
 router.get("/getProjects", authenticateToken, getProjects);
+router.get("/getProject/:id", authenticateToken, getProject);
+router.put("/updateProjectKey", authenticateToken, updateProjectKey);
 router.get("/verifyProjectKey", authenticateProject, verifyProjectKey);
 router.get("/generateClient", (req, res) => {
   const auth_token = jwt.sign(
@@ -25,4 +30,5 @@ router.get("/generateClient", (req, res) => {
 });
 router.post("/createProject", authenticateToken, createProject);
 router.delete("/deleteProject", authenticateToken, deleteProject);
+router.put("/toggleProjectStatus", authenticateToken, toggleProjectStatus);
 export default router;

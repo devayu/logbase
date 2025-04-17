@@ -15,29 +15,22 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
 import { createProjectMutation } from "@/services/projects";
+import { useCreateProject } from "@/hooks/useProjects";
 
 export const NewProjectCard = () => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const { isLoading, error } = createProjectMutation;
-  const [mutationState, setMutationState] = useState({ isLoading, error });
-
-  useEffect(() => {
-    const unsubscribe = createProjectMutation.subscribe((state) => {
-      setMutationState({ isLoading: state.isLoading, error: state.error });
-    });
-    return unsubscribe;
-  }, []);
+  const { isLoading, createProject } = useCreateProject();
 
   const handleAddProject = async () => {
-    const newProject = await createProjectMutation.trigger({
+    const newProject = await createProject({
       projectName: name,
       description,
     });
     if (newProject) {
-      router.refresh();
+      router.push(`/dashboard/${newProject.id}`);
       setOpen(false);
       setName("");
       setDescription("");
@@ -47,10 +40,10 @@ export const NewProjectCard = () => {
   return (
     <>
       <Card
-        className="cursor-pointer border-dashed border-2 hover:border-primary/50 hover:bg-accent/10 transition-colors h-[150px]"
+        className="cursor-pointer border-dashed border-2 hover:border-primary/50 hover:bg-accent/10 transition-colors"
         onClick={() => setOpen(true)}
       >
-        <CardContent className="flex flex-col items-center justify-center h-full py-6">
+        <CardContent className="flex flex-col items-center justify-center h-full">
           <div className="h-12 w-12 rounded-full bg-accent/20 flex items-center justify-center mb-4">
             <Plus className="h-6 w-6 text-primary" />
           </div>
@@ -91,14 +84,9 @@ export const NewProjectCard = () => {
             <Button variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button
-              onClick={handleAddProject}
-              disabled={mutationState.isLoading}
-            >
-              {mutationState.isLoading && (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              )}
-              {mutationState.isLoading ? "Please wait..." : "Create Project"}
+            <Button onClick={handleAddProject} disabled={isLoading}>
+              {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+              {isLoading ? "Please wait..." : "Create Project"}
             </Button>
           </DialogFooter>
         </DialogContent>
