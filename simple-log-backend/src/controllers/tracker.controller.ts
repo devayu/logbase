@@ -1,8 +1,130 @@
+import { and, eq, gte, lte } from "drizzle-orm";
 import { Response } from "express";
 import { db } from "../db";
 import { eventsTable } from "../db/schema";
 import { AuthRequest } from "../middleware/authentication.middleware";
 
+export const getAllEvents = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
+  if (!req.body.projectId) {
+    res.status(401).json({
+      status: "error",
+      message: "Invalid request project id is missing",
+    });
+  }
+  const { projectId } = req.body;
+  const events =
+    (await db
+      .select()
+      .from(eventsTable)
+      .where(eq(eventsTable.project_id, projectId as number))) ?? [];
+  const groupedEvents = events.reduce((acc, event) => {
+    const eventName = event.event;
+    if (!acc[eventName]) {
+      acc[eventName] = {
+        event: eventName,
+        count: 0,
+        events: [],
+      };
+    }
+    acc[eventName].count++;
+    acc[eventName].events.push({
+      id: event.id,
+      timestamp: event.timestamp,
+      metadata: event.metadata,
+    });
+    return acc;
+  }, {} as Record<string, { event: string; count: number; events: any[] }>);
+  const transformedEvents2 = events.map((event) => {
+    return {
+      id: event.id,
+      event: event.event,
+      timestamp: event.timestamp,
+      metadata: event.metadata,
+    };
+  });
+  const transformedEvents = Object.values(groupedEvents);
+  res.status(200).json({
+    status: "ok",
+    events: transformedEvents,
+  });
+};
+export const getEventsOverview = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
+  if (!req.body.projectId) {
+    res.status(401).json({
+      status: "error",
+      message: "Invalid request project id is missing",
+    });
+  }
+  const { projectId } = req.body;
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const sixtyDaysAgo = new Date();
+  sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
+
+  const currentMonthEvents =
+    (await db
+      .select()
+      .from(eventsTable)
+      .where(
+        and(
+          eq(eventsTable.project_id, projectId as number),
+          gte(eventsTable.timestamp, thirtyDaysAgo)
+        )
+      )) ?? [];
+  const currentActiveUsers = new Set(
+    currentMonthEvents
+      .map((event) => (event.metadata as Record<string, any>)?.ipAddress)
+      .filter(Boolean)
+  ).size;
+  const previousMonthEvents =
+    (await db
+      .select()
+      .from(eventsTable)
+      .where(
+        and(
+          eq(eventsTable.project_id, projectId as number),
+          gte(eventsTable.timestamp, sixtyDaysAgo),
+          lte(eventsTable.timestamp, thirtyDaysAgo)
+        )
+      )) ?? [];
+  const previousActiveUsers = new Set(
+    previousMonthEvents
+      .map((event) => (event.metadata as Record<string, any>)?.ipAddress)
+      .filter(Boolean)
+  ).size;
+  const currentCount = currentMonthEvents.length;
+  const previousCount = previousMonthEvents.length;
+  const growthPercentage =
+    previousCount === 0
+      ? 100
+      : ((currentCount - previousCount) / previousCount) * 100;
+  const activeUsersGrowth =
+    previousActiveUsers === 0
+      ? 100
+      : ((currentActiveUsers - previousActiveUsers) / previousActiveUsers) *
+        100;
+
+  res.status(200).json({
+    status: "ok",
+    events: currentMonthEvents,
+    overview: {
+      total_events: currentCount,
+      growth_percentage: Math.round(growthPercentage * 100) / 100,
+      previous_count: previousCount,
+      active_users: {
+        current: currentActiveUsers,
+        previous: previousActiveUsers,
+        growth_percentage: Math.round(activeUsersGrowth * 100) / 100,
+      },
+    },
+  });
+};
 export const trackEvent = async (
   req: AuthRequest,
   res: Response

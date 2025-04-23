@@ -92,6 +92,53 @@ export const getProject = async (
     .orderBy(desc(projectsTable.created_at));
   res.status(200).json(project);
 };
+export const updateProject = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
+  const { body } = req;
+  if (!body || !body.projectId) {
+    res.status(403).json({
+      status: "error",
+      message: "Invalid request",
+    });
+    return;
+  }
+  if (!req.client_id) {
+    res.status(401).json({
+      status: "error",
+      message: "Invalid request client id is missing",
+    });
+    return;
+  }
+  const { projectId, projectName, description } = body;
+  const updatedKey = generateApiKey();
+  const projectUpdated = await db
+    .update(projectsTable)
+    .set({
+      api_key: updatedKey,
+      name: projectName,
+      description: description,
+      updated_at: new Date(),
+    })
+    .where(
+      and(
+        eq(projectsTable.client_id, req.client_id as string),
+        eq(projectsTable.id, projectId as number)
+      )
+    );
+
+  if (projectUpdated.count === 0) {
+    res.status(500).json({
+      status: "error",
+      message: "Unable to generate key api key",
+    });
+    return;
+  }
+  res.status(200).json({
+    status: "ok",
+  });
+};
 export const updateProjectKey = async (
   req: AuthRequest,
   res: Response

@@ -8,6 +8,7 @@ import {
   toggleProjectStatus,
   getProject,
   updateProjectKey,
+  updateProject,
 } from "../controllers/project.controller";
 import {
   authenticateProject,
@@ -20,6 +21,7 @@ const router = Router();
 router.get("/getProjects", authenticateToken, getProjects);
 router.get("/getProject/:id", authenticateToken, getProject);
 router.put("/updateProjectKey", authenticateToken, updateProjectKey);
+router.put("/updateProject", authenticateToken, updateProject);
 router.get("/verifyProjectKey", authenticateProject, verifyProjectKey);
 router.get("/generateClient", (req, res) => {
   const auth_token = jwt.sign(
