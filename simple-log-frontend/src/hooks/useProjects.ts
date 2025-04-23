@@ -84,6 +84,30 @@ export function useUpdateProjectKey() {
   };
 }
 
+interface UpdateProjectParams extends BaseParams {
+  projectName: string;
+  description: string;
+}
+export function useUpdateProject() {
+  const mutation = useApiMutation<BaseResponse, UpdateProjectParams>();
+
+  const updateProject = async (
+    updateProjectParams: UpdateProjectParams
+  ): Promise<BaseResponse> => {
+    return mutation.mutate("/updateProject", updateProjectParams, {
+      method: "PUT",
+      cache: "no-store",
+    });
+  };
+
+  return {
+    updateProject,
+    isLoading: mutation.isLoading,
+    error: mutation.error,
+    data: mutation.data,
+  };
+}
+
 interface ToggleProjectStatus extends BaseParams {
   status: "ACTIVE" | "PAUSED";
 }

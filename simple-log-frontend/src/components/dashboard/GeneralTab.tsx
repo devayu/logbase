@@ -12,12 +12,16 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { createDeleteProjectMutation, Project } from "@/services/projects";
-import { ArrowUpFromLine, Trash2 } from "lucide-react";
+import { Project, useUpdateProject } from "@/hooks/useProjects";
+import { ArrowUpFromLine, Loader2, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export const GeneralTab = ({ project }: { project: Project | null }) => {
+  const { isLoading, error, updateProject } = useUpdateProject();
+  const [name, setName] = useState(project?.name);
+  const [description, setDescription] = useState(project?.description);
   const router = useRouter();
   const [deleteDialog, setDeleteDialog] = useState<DeleteDialogState>({
     id: null,
@@ -30,7 +34,22 @@ export const GeneralTab = ({ project }: { project: Project | null }) => {
   const openDeleteDialog = (id: number, name: string) => {
     setDeleteDialog({ id, open: true, projectName: name });
   };
+  const handleUpdateProject = async () => {
+    if (!project?.id) return;
+    if (!name || !description) return toast.error("Please fill all fields");
+    const res = await updateProject({
+      projectId: project.id,
+      projectName: name,
+      description: description,
+    });
+    if (res.status === "ok") {
+      toast.success("Project updated successfully");
+      router.refresh();
+    }
+  };
 
+  const hasChanges =
+    name !== project?.name || description !== project?.description;
   return (
     <Card>
       <CardHeader>
@@ -42,27 +61,44 @@ export const GeneralTab = ({ project }: { project: Project | null }) => {
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <label className="text-sm font-medium">Project Name</label>
-          <Input defaultValue={project?.name} />
+          <Input
+            defaultValue={name}
+            onChange={(e) => setName(e.target.value)}
+          />
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium">Description</label>
-          <Textarea defaultValue={project?.description} />
+          <Textarea
+            defaultValue={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
         </div>
-        <Button
-          variant="outline"
-          onClick={() => openDeleteDialog(project!.id, project!.name)}
-        >
-          <ArrowUpFromLine className="mr-2 h-4 w-4" />
-          Update project
-        </Button>
-        <Button
-          variant="outline"
-          className="text-destructive hover:text-destructive/90"
-          onClick={() => openDeleteDialog(project!.id, project!.name)}
-        >
-          <Trash2 className="mr-2 h-4 w-4" />
-          Delete project
-        </Button>
+
+        <div className="flex gap-2">
+          <Button
+            onClick={handleUpdateProject}
+            disabled={isLoading || !hasChanges}
+            variant="outline"
+            className={`transition-opacity duration-200 ${
+              hasChanges ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <ArrowUpFromLine className="mr-2 h-4 w-4" />
+            )}
+            {isLoading ? "Updating..." : "Update Project"}
+          </Button>
+          <Button
+            variant="outline"
+            className="text-destructive hover:text-destructive/90"
+            onClick={() => openDeleteDialog(project!.id, project!.name)}
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete project
+          </Button>
+        </div>
 
         <DeleteConfirmationDialog
           deleteDialog={deleteDialog}

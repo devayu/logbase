@@ -1,14 +1,37 @@
 "use client";
-import { BarChart3, Settings } from "lucide-react";
-import { useState } from "react";
+import { BarChart3, ChartLine, Settings } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Project } from "@/hooks/useProjects";
 import { Overview } from "./Overview";
 import { ProjectSettings } from "./ProjectSettings";
+import { AllEvents } from "@/components/dashboard/AllEvents";
 
 export const DashboardContent = ({ project }: { project: Project | null }) => {
-  const [activeTab, setActiveTab] = useState("overview");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState(
+    searchParams.get("tab") || "overview"
+  );
+
+  useEffect(() => {
+    router.push(`?tab=${activeTab}`, { scroll: false });
+  }, [activeTab, router]);
+
+  const getViewToRender = () => {
+    switch (activeTab) {
+      case "overview":
+        return <Overview project={project} />;
+      case "all-events":
+        return <AllEvents projectId={project?.id ?? 0}></AllEvents>;
+      case "settings":
+        return <ProjectSettings project={project} />;
+      default:
+        return <Overview project={project} />;
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -25,6 +48,10 @@ export const DashboardContent = ({ project }: { project: Project | null }) => {
                 <BarChart3 className="h-4 w-4 mr-2" />
                 Overview
               </TabsTrigger>
+              <TabsTrigger value="all-events" className="cursor-pointer">
+                <ChartLine className="h-4 w-4 mr-2" />
+                All events
+              </TabsTrigger>
               <TabsTrigger value="settings" className="cursor-pointer">
                 <Settings className="h-4 w-4 mr-2" />
                 Settings
@@ -40,11 +67,8 @@ export const DashboardContent = ({ project }: { project: Project | null }) => {
             {project?.description}
           </p>
         </div>
-        {activeTab === "overview" ? (
-          <Overview project={project} />
-        ) : (
-          <ProjectSettings project={project} />
-        )}
+
+        {getViewToRender()}
       </main>
     </div>
   );

@@ -1,8 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -10,12 +8,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Plus } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { createProjectMutation } from "@/services/projects";
 import { useCreateProject } from "@/hooks/useProjects";
+import { Loader2, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export const NewProjectCard = () => {
   const router = useRouter();

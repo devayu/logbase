@@ -127,10 +127,10 @@ export default function Home() {
             <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center">
               <BarChart2 className="h-3 w-3 text-primary-foreground" />
             </div>
-            <p className="text-sm font-medium">App Insight Central</p>
+            <p className="text-sm font-medium">Simple Log</p>
           </div>
           <p className="text-xs text-muted-foreground">
-            &copy; 2025 App Insight Central. All rights reserved.
+            &copy; 2025 Simple Log. All rights reserved.
           </p>
         </div>
       </footer>

@@ -2,6 +2,15 @@
 import { useState, useCallback } from "react";
 import { api, ApiState } from "../services/api";
 
+export interface BaseResponse {
+  status: string;
+  message?: string;
+}
+
+export interface BaseParams {
+  projectId: number;
+}
+
 export function useApiMutation<T, P>() {
   const [state, setState] = useState<ApiState<T>>({
     data: null,

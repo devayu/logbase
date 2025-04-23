@@ -64,7 +64,7 @@ export const Header = ({ email = "user@example.com" }: HeaderProps) => {
                   <BarChart2 className="h-5 w-5 text-primary-foreground" />
                 </div>
                 <span className="text-lg font-bold gradient-text">
-                  App Insight Central
+                  Simple Log
                 </span>
               </div>
               <nav className="grid gap-2 py-4">
@@ -97,9 +97,7 @@ export const Header = ({ email = "user@example.com" }: HeaderProps) => {
           <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
             <BarChart2 className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="text-lg font-bold gradient-text">
-            App Insight Central
-          </span>
+          <span className="text-lg font-bold gradient-text">Simple Log</span>
         </div>
 
         <nav className="hidden md:ml-8 md:flex md:gap-4 lg:gap-6">
