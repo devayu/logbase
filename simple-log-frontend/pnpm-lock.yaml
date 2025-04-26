@@ -175,6 +175,9 @@ devDependencies:
   '@types/react-dom':
     specifier: ^19
     version: 19.1.2(@types/react@19.1.2)
+  '@types/react-syntax-highlighter':
+    specifier: ^15.5.13
+    version: 15.5.13
   autoprefixer:
     specifier: ^10.4.20
     version: 10.4.21(postcss@8.5.3)
@@ -2149,6 +2152,12 @@ packages:
       '@types/react': ^19.0.0
     dependencies:
       '@types/react': 19.1.2
+
+  /@types/react-syntax-highlighter@15.5.13:
+    resolution: {integrity: sha512-uLGJ87j6Sz8UaBAooU0T6lWJ0dBmjZgN1PZTrj05TNql2/XpC6+4HhMT5syIdFUUt+FASfCeLLv4kBygNU+8qA==}
+    dependencies:
+      '@types/react': 19.1.2
+    dev: true
 
   /@types/react@19.1.2:
     resolution: {integrity: sha512-oxLPMytKchWGbnQM9O7D67uPa9paTNxO7jVoNMXgkkErULBPhPARCfkKL9ytcIJJRGjbsVwW4ugJzyFFvm/Tiw==}
