@@ -1,3 +1,4 @@
+"use client";
 import { Copy, Eye, EyeOff, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 

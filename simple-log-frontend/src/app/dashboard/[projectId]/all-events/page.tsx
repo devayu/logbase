@@ -1,4 +1,4 @@
-import { DashboardContent } from "@/components/dashboard/Dashboard";
+import { AllEvents } from "@/components/dashboard/AllEvents";
 import { ProjectNotFound } from "@/components/dashboard/ProjectNotFound";
 import { Project } from "@/hooks/useProjects";
 import { Api } from "@/services/api";
@@ -19,5 +19,5 @@ export default async function Home({
   if (error || !project) {
     return <ProjectNotFound />;
   }
-  return <DashboardContent project={project}></DashboardContent>;
+  return <AllEvents projectId={+projectId}></AllEvents>;
 }

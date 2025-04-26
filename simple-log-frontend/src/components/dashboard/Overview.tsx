@@ -1,166 +1,13 @@
 "use client";
 
+import { EventsChart } from "@/components/dashboard/EventsChart";
 import { EventsTable } from "@/components/dashboard/EventsTable";
-import { useEffect, useState, useMemo } from "react";
-import { BarChart3, Layers } from "lucide-react";
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { EventStatCard } from "@/components/dashboard/EventStatCard";
 import { useGetEventsOverview } from "@/hooks/useEvents";
 import { Project } from "@/hooks/useProjects";
-
-// Types
-interface EventData {
-  date: string;
-  events: number;
-  uniqueUsers: number;
-}
-
-interface StatCardProps {
-  title: string;
-  value: string | number;
-  icon: React.ElementType;
-  description: string;
-  trend?: {
-    value: number;
-    label: string;
-    positive: boolean;
-  };
-}
-
-// Components
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (!active || !payload?.length) return null;
-
-  return (
-    <div className="rounded-lg border bg-background p-2 shadow-md">
-      <p className="text-sm font-medium">{label}</p>
-      {payload.map((entry: any, index: number) => (
-        <p key={index} className="text-xs" style={{ color: entry.color }}>
-          {`${entry.name}: ${entry.value}`}
-        </p>
-      ))}
-    </div>
-  );
-};
-
-const StatCard = ({
-  title,
-  value,
-  icon: Icon,
-  description,
-  trend,
-}: StatCardProps) => (
-  <Card className="border border-border/30">
-    <CardHeader className="flex flex-row items-center justify-between pb-2">
-      <CardTitle className="text-sm font-medium">{title}</CardTitle>
-      <Icon className="h-4 w-4 text-muted-foreground" />
-    </CardHeader>
-    <CardContent>
-      <div className="text-2xl font-bold">{value}</div>
-      <p className="text-xs text-muted-foreground">{description}</p>
-      {trend && (
-        <div
-          className={`mt-2 text-xs ${
-            trend.positive ? "text-green-500" : "text-destructive"
-          }`}
-        >
-          {trend.positive ? "+" : "-"}
-          {trend.value}% {trend.label}
-        </div>
-      )}
-    </CardContent>
-  </Card>
-);
-
-const EventsChart = ({
-  data,
-  timeRange,
-  onTimeRangeChange,
-}: {
-  data: EventData[] | undefined;
-  timeRange: string;
-  onTimeRangeChange: (range: string) => void;
-}) => (
-  <Card className="col-span-full lg:col-span-4 border border-border/30">
-    <CardHeader>
-      <CardTitle>Event Analytics</CardTitle>
-      <CardDescription>Event distribution over time</CardDescription>
-      <Tabs
-        defaultValue="7d"
-        className="w-[300px]"
-        value={timeRange}
-        onValueChange={onTimeRangeChange}
-      >
-        <TabsList>
-          <TabsTrigger value="7d">7d</TabsTrigger>
-          <TabsTrigger value="14d">14d</TabsTrigger>
-          <TabsTrigger value="30d">30d</TabsTrigger>
-        </TabsList>
-      </Tabs>
-    </CardHeader>
-    <CardContent className="pl-2">
-      <ResponsiveContainer width="100%" height={350}>
-        <LineChart
-          data={data}
-          margin={{ top: 5, right: 10, left: 10, bottom: 0 }}
-        >
-          <CartesianGrid
-            strokeDasharray="3 3"
-            vertical={false}
-            strokeOpacity={0.2}
-          />
-          <XAxis
-            dataKey="date"
-            stroke="#888888"
-            fontSize={12}
-            tickLine={false}
-            axisLine={false}
-          />
-          <YAxis
-            stroke="#888888"
-            fontSize={12}
-            tickLine={false}
-            axisLine={false}
-            tickFormatter={(value) => `${value}`}
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Line
-            type="monotone"
-            dataKey="events"
-            name="Events"
-            stroke="#FFDA1D"
-            strokeWidth={2}
-            dot={false}
-            activeDot={{ r: 6 }}
-          />
-          <Line
-            type="monotone"
-            dataKey="uniqueUsers"
-            name="Unique Users"
-            stroke="#22c55e"
-            strokeWidth={2}
-            dot={false}
-          />
-        </LineChart>
-      </ResponsiveContainer>
-    </CardContent>
-  </Card>
-);
+import { EventData } from "@/types";
+import { BarChart3, Layers } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 const processEventsData = (events: any[], days: number): EventData[] => {
   const data: EventData[] = [];
@@ -220,8 +67,6 @@ export const Overview = ({ project }: { project: Project | null }) => {
     return processEventsData(data.events, days);
   }, [data?.events, timeRange]);
 
-  console.log(chartData);
-
   useEffect(() => {
     if (project?.id) {
       getEventsOverview(project.id);
@@ -231,7 +76,7 @@ export const Overview = ({ project }: { project: Project | null }) => {
   return (
     <div className="space-y-4 p-4 md:p-6">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <StatCard
+        <EventStatCard
           title="Total Events"
           value={data?.overview.total_events ?? 0}
           icon={Layers}
@@ -242,7 +87,7 @@ export const Overview = ({ project }: { project: Project | null }) => {
             positive: (data?.overview.growth_percentage ?? 0) >= 0,
           }}
         />
-        <StatCard
+        <EventStatCard
           title="Active Users"
           value={data?.overview.active_users.current ?? 0}
           icon={BarChart3}
@@ -261,7 +106,7 @@ export const Overview = ({ project }: { project: Project | null }) => {
         onTimeRangeChange={setTimeRange}
       />
 
-      <EventsTable />
+      <EventsTable events={data?.events} count={5} />
     </div>
   );
 };

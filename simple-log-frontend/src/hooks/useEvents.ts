@@ -3,17 +3,27 @@ import { Api, ApiState } from "@/services/api";
 
 export interface Event {
   id: number;
-  event: string;
+  type: string;
   timestamp: string;
-  metadata: Record<string, any>;
+  metadata: Record<string, any> & {
+    source: string;
+    ipAddress: string;
+    city: string;
+    region: string;
+    country: string;
+    path: string;
+  };
 }
 
 export async function getServerProjects(): Promise<ApiState<Event[]>> {
   return await Api.getInstance().fetch<Event[]>("/getEvents", {});
 }
 
+interface GetEventsResponse extends BaseResponse {
+  events: Event[];
+}
 export function useGetAllEvents() {
-  const mutation = useApiMutation<BaseResponse, BaseParams>();
+  const mutation = useApiMutation<GetEventsResponse, BaseParams>();
 
   const getAllEvents = async (projectId: number) => {
     return mutation.mutate("/getEvents", { projectId }, { method: "POST" });

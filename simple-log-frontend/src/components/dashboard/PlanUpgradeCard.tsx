@@ -12,7 +12,7 @@ import { Check, Sparkles } from "lucide-react";
 export const PlanUpgradeCard = ({
   currentPlan,
 }: {
-  currentPlan: "BASIC" | "PREMIUM";
+  currentPlan?: "BASIC" | "PREMIUM";
 }) => {
   const handleUpgrade = async () => {
     // Add your payment/upgrade logic here

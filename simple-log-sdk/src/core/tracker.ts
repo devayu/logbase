@@ -107,7 +107,7 @@ export class SimpleLogTracker {
       console.error("[SimpleLog SDK] Failed to verify api key", err);
     }
   }
-  public async trackEvent(event: string, metadata: Record<string, any>) {
+  public async trackEvent(type: string, metadata: Record<string, any>) {
     if (!this.apiKey) {
       console.warn("[SimpleLog SDK] You must call init() first.");
       return;
@@ -127,10 +127,10 @@ export class SimpleLogTracker {
     const isClient =
       typeof window !== "undefined" && typeof navigator !== "undefined";
     const body = {
-      event: event,
+      type,
       metadata: metadata,
       timestamp: new Date().toISOString(),
-      url: isClient ? window?.location.href : undefined,
+      url: isClient ? window?.location.pathname : undefined,
       userAgent: isClient ? navigator.userAgent : undefined,
     };
 

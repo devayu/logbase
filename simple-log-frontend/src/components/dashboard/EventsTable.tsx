@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { DownloadCloud, Filter, Search } from "lucide-react";
 
@@ -20,52 +19,33 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Event } from "@/hooks/useEvents";
+import { cn } from "@/lib/utils";
 
-// Mock event data
-const eventData = [
-  {
-    id: "evt_1",
-    type: "page_view",
-    source: "web",
-    path: "/products",
-    timestamp: "2025-04-10T10:30:00Z",
-    properties: { referrer: "google.com" },
-  },
-  {
-    id: "evt_2",
-    type: "click",
-    source: "web",
-    path: "/products/123",
-    timestamp: "2025-04-10T10:32:15Z",
-    properties: { element: "add_to_cart_button" },
-  },
-  {
-    id: "evt_3",
-    type: "purchase",
-    source: "ios",
-    path: "/checkout",
-    timestamp: "2025-04-10T10:45:22Z",
-    properties: { amount: 49.99, currency: "USD" },
-  },
-  {
-    id: "evt_4",
-    type: "login",
-    source: "android",
-    path: "/auth",
-    timestamp: "2025-04-10T11:15:00Z",
-    properties: { method: "google" },
-  },
-  {
-    id: "evt_5",
-    type: "error",
-    source: "web",
-    path: "/api/users",
-    timestamp: "2025-04-10T11:22:45Z",
-    properties: { code: 500, message: "Internal server error" },
-  },
-];
-
-export const EventsTable = () => {
+const getColorForEventType = (eventType: string) => {
+  if (eventType.includes("error")) {
+    return "bg-destructive";
+  }
+  if (
+    eventType.includes("view") ||
+    eventType.includes("page") ||
+    eventType.includes("submit")
+  ) {
+    return "bg-green-500";
+  }
+  if (eventType.includes("route")) {
+    return "bg-blue-500";
+  }
+  return "bg-gray-500";
+};
+export const EventsTable = ({
+  events = [],
+  count,
+}: {
+  events: Event[] | undefined;
+  count?: number | undefined;
+}) => {
+  const eventsToShow = count ? events.slice(0, count) : events;
   const [searchQuery, setSearchQuery] = useState("");
   const [eventTypeFilter, setEventTypeFilter] = useState("all");
 
@@ -79,12 +59,12 @@ export const EventsTable = () => {
     }).format(date);
   };
 
-  const filteredEvents = eventData.filter((event) => {
+  const filteredEvents = eventsToShow.filter((event) => {
     const matchesSearch =
       searchQuery === "" ||
       event.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.path.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.source.toLowerCase().includes(searchQuery.toLowerCase());
+      event.metadata.path.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event.metadata.source.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesType =
       eventTypeFilter === "all" || event.type === eventTypeFilter;
@@ -92,11 +72,13 @@ export const EventsTable = () => {
     return matchesSearch && matchesType;
   });
 
-  const eventTypes = Array.from(new Set(eventData.map((event) => event.type)));
+  const eventTypes = Array.from(
+    new Set(eventsToShow.map((event) => event.type))
+  );
 
   return (
-    <Card className="overflow-hidden border border-border/30">
-      <CardHeader className="px-6 py-4">
+    <Card className="overflow-hidden border border-border/30 gap-2">
+      <CardHeader className="px-6">
         <CardTitle className="text-lg font-medium flex justify-between items-center">
           <span>Recent Events</span>
           <Button variant="outline" size="sm">
@@ -106,7 +88,7 @@ export const EventsTable = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
-        <div className="p-6 pb-4 border-b border-border/30 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="p-4  flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="relative w-full sm:w-64 flex-1">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -118,10 +100,7 @@ export const EventsTable = () => {
           </div>
           <div className="flex items-center gap-2">
             <Filter className="h-4 w-4 text-muted-foreground" />
-            <Select
-              value={eventTypeFilter}
-              onValueChange={setEventTypeFilter}
-            >
+            <Select value={eventTypeFilter} onValueChange={setEventTypeFilter}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Event Type" />
               </SelectTrigger>
@@ -136,7 +115,7 @@ export const EventsTable = () => {
             </Select>
           </div>
         </div>
-        <div className="max-h-[400px] overflow-auto">
+        <div className="max-h-[400px] overflow-auto px-4">
           <Table>
             <TableHeader className="sticky top-0 border-b bg-accent/50 backdrop-blur">
               <TableRow>
@@ -154,28 +133,25 @@ export const EventsTable = () => {
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
                         <div
-                          className={`w-2 h-2 rounded-full ${
-                            event.type === "error"
-                              ? "bg-destructive"
-                              : event.type === "purchase"
-                              ? "bg-green-500"
-                              : "bg-primary"
-                          }`}
+                          className={cn(
+                            `w-2 h-2 rounded-full`,
+                            getColorForEventType(event.type)
+                          )}
                         />
                         {event.type}
                       </div>
                     </TableCell>
                     <TableCell className="font-mono text-xs">
-                      {event.path}
+                      {event.metadata.path && event.metadata.path}
                     </TableCell>
                     <TableCell>
                       <span className="px-2 py-1 rounded-full text-xs bg-secondary">
-                        {event.source}
+                        {event.metadata.source ?? "unknown"}
                       </span>
                     </TableCell>
                     <TableCell>{formatDate(event.timestamp)}</TableCell>
                     <TableCell className="font-mono text-xs">
-                      {JSON.stringify(event.properties)}
+                      {JSON.stringify(event.metadata)}
                     </TableCell>
                   </TableRow>
                 ))

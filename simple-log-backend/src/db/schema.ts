@@ -9,7 +9,6 @@ import {
 
 export const projectStatusEnum = pgEnum("project_status", ["ACTIVE", "PAUSED"]);
 export const projectPlanEnum = pgEnum("project_plan", ["BASIC", "PREMIUM"]);
-
 export const projectsTable = pgTable("projects", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   name: varchar({ length: 255 }).notNull(),
@@ -25,7 +24,7 @@ export const projectsTable = pgTable("projects", {
 export const eventsTable = pgTable("events", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   project_id: integer("project_id").references(() => projectsTable.id),
-  event: varchar("event", { length: 255 }).notNull(),
+  type: varchar("type", { length: 255 }).notNull(),
   timestamp: timestamp("timestamp").defaultNow(),
   metadata: jsonb("metadata"),
 });

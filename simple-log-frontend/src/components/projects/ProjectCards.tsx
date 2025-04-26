@@ -39,7 +39,7 @@ export const ProjectCards = ({ projects }: { projects: Project[] | null }) => {
   });
 
   const handleProjectClick = (projectId: number) => {
-    router.push(`/dashboard/${projectId}`);
+    router.push(`/dashboard/${projectId}/overview`);
   };
 
   const handleProjectPause = async (

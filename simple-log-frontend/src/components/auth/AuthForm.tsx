@@ -36,7 +36,7 @@ type AuthFormValues = z.infer<typeof authSchema>;
 export const AuthForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { toast } = { toast: ({}) => {} }; // TODO: add toast component {t};
+  const { toast } = { toast: ({}) => {} }; // TODO: add toast component;
   const navigate = useRouter();
 
   const form = useForm<AuthFormValues>({

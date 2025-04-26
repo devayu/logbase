@@ -3,7 +3,7 @@ import { eventsTable, projectsTable } from "../db/schema";
 
 const eventTypes = [
   {
-    name: "page_view",
+    name: "PAGE_VIEW",
     metadataTemplates: [
       {
         url: "/dashboard",
@@ -22,7 +22,7 @@ const eventTypes = [
     ],
   },
   {
-    name: "button_click",
+    name: "BUTTON_CLICK",
     metadataTemplates: [
       {
         buttonId: "submit-form",
@@ -37,7 +37,7 @@ const eventTypes = [
     ],
   },
   {
-    name: "form_submit",
+    name: "SUBMIT",
     metadataTemplates: [
       {
         formId: "contact",
@@ -95,7 +95,7 @@ async function seedEvents(seedLimit: number = 100) {
         now.getTime() - Math.random() * 7 * 24 * 60 * 60 * 1000
       );
       await db.insert(eventsTable).values({
-        event: randomEvent.name,
+        type: randomEvent.name,
         project_id: projectId,
         metadata: {
           ...randomTemplate,

@@ -1,10 +1,10 @@
-import { and, eq, gte, lte } from "drizzle-orm";
+import { and, desc, eq, gte, lte } from "drizzle-orm";
 import { Response } from "express";
 import { db } from "../db";
 import { eventsTable } from "../db/schema";
 import { AuthRequest } from "../middleware/authentication.middleware";
 
-export const getAllEvents = async (
+export const getAllEvents2 = async (
   req: AuthRequest,
   res: Response
 ): Promise<void> => {
@@ -21,7 +21,7 @@ export const getAllEvents = async (
       .from(eventsTable)
       .where(eq(eventsTable.project_id, projectId as number))) ?? [];
   const groupedEvents = events.reduce((acc, event) => {
-    const eventName = event.event;
+    const eventName = event.type;
     if (!acc[eventName]) {
       acc[eventName] = {
         event: eventName,
@@ -37,18 +37,52 @@ export const getAllEvents = async (
     });
     return acc;
   }, {} as Record<string, { event: string; count: number; events: any[] }>);
-  const transformedEvents2 = events.map((event) => {
-    return {
-      id: event.id,
-      event: event.event,
-      timestamp: event.timestamp,
-      metadata: event.metadata,
-    };
-  });
+
   const transformedEvents = Object.values(groupedEvents);
   res.status(200).json({
     status: "ok",
     events: transformedEvents,
+  });
+};
+export const getAllEvents = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
+  if (!req.body.projectId) {
+    res.status(401).json({
+      status: "error",
+      message: "Invalid request project id is missing",
+    });
+  }
+  const { projectId } = req.body;
+  const events =
+    (await db
+      .select()
+      .from(eventsTable)
+      .where(eq(eventsTable.project_id, projectId as number))
+      .orderBy(desc(eventsTable.timestamp))) ?? [];
+  const groupedEvents = events.reduce((acc, event) => {
+    const eventName = event.type;
+    if (!acc[eventName]) {
+      acc[eventName] = {
+        event: eventName,
+        count: 0,
+        events: [],
+      };
+    }
+    acc[eventName].count++;
+    acc[eventName].events.push({
+      id: event.id,
+      timestamp: event.timestamp,
+      metadata: event.metadata,
+    });
+    return acc;
+  }, {} as Record<string, { event: string; count: number; events: any[] }>);
+
+  const transformedEvents = Object.values(groupedEvents);
+  res.status(200).json({
+    status: "ok",
+    events,
   });
 };
 export const getEventsOverview = async (
@@ -76,7 +110,8 @@ export const getEventsOverview = async (
           eq(eventsTable.project_id, projectId as number),
           gte(eventsTable.timestamp, thirtyDaysAgo)
         )
-      )) ?? [];
+      )
+      .orderBy(desc(eventsTable.timestamp))) ?? [];
   const currentActiveUsers = new Set(
     currentMonthEvents
       .map((event) => (event.metadata as Record<string, any>)?.ipAddress)
@@ -130,7 +165,7 @@ export const trackEvent = async (
   res: Response
 ): Promise<void> => {
   const { body } = req;
-  if (!body || !body.event) {
+  if (!body || !body.type) {
     res.status(403).json({
       status: "error",
       message: "Invalid request",
@@ -142,7 +177,7 @@ export const trackEvent = async (
       message: "Invalid request project id is missing",
     });
   }
-  const { event } = body;
+  const { type, userAgent, url } = body;
   const forwarded = req.headers["x-forwarded-for"];
   const ip =
     typeof forwarded === "string"
@@ -154,8 +189,7 @@ export const trackEvent = async (
     `https://ipinfo.io/${cleanIP}?token=${process.env.IP_INFO_API_KEY}`
   );
   const data = (await geo.json()) as Record<string, any>;
-
-  console.log(ip, data.city, data.region, data.country);
+  const deviceType = getDeviceType(userAgent);
 
   const updatedMetadata = {
     ...body.metadata,
@@ -163,11 +197,13 @@ export const trackEvent = async (
     region: data.region,
     country: data.country,
     ipAddress: ip,
+    path: url,
+    source: deviceType, // web, mobile, tablet, desktop,
   };
   const [newEvent] = await db
     .insert(eventsTable)
     .values({
-      event,
+      type,
       project_id: req.project_id as number,
       metadata: updatedMetadata,
     })
@@ -177,3 +213,25 @@ export const trackEvent = async (
     newEvent,
   });
 };
+
+function getDeviceType(
+  userAgent: string
+): "mobile" | "web" | "tablet" | "unknown" {
+  const ua = userAgent.toLowerCase();
+
+  // Check for mobile devices
+  if (/(android|webos|iphone|ipad|ipod|blackberry|windows phone)/i.test(ua)) {
+    // Specifically check for tablets
+    if (/(ipad|android(?!.*mobile))/i.test(ua)) {
+      return "tablet";
+    }
+    return "mobile";
+  }
+
+  // If not mobile and has common desktop browser strings, consider it web
+  if (/(mozilla|chrome|safari|firefox|edge|opera)/i.test(ua)) {
+    return "web";
+  }
+
+  return "unknown";
+}
