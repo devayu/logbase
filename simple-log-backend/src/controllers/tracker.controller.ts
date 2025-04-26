@@ -79,7 +79,6 @@ export const getAllEvents = async (
     return acc;
   }, {} as Record<string, { event: string; count: number; events: any[] }>);
 
-  const transformedEvents = Object.values(groupedEvents);
   res.status(200).json({
     status: "ok",
     events,
