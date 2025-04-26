@@ -215,7 +215,6 @@ const ProjectMenu = ({
   plan,
   onDelete,
   onPause,
-  dropdownItems,
 }: {
   status: "ACTIVE" | "PAUSED";
   plan: "BASIC" | "PREMIUM";

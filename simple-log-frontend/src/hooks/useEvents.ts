@@ -5,6 +5,7 @@ export interface Event {
   id: number;
   type: string;
   timestamp: string;
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   metadata: Record<string, any> & {
     source: string;
     ipAddress: string;

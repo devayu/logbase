@@ -15,15 +15,26 @@ import {
   Tooltip,
   Line,
   LineChart,
+  TooltipProps,
 } from "recharts";
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface CustomTooltipProps extends TooltipProps<number, string> {
+  active?: boolean;
+  payload?: Array<{
+    value: number;
+    name: string;
+    color: string;
+  }>;
+  label?: string;
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (!active || !payload?.length) return null;
 
   return (
     <div className="rounded-lg border bg-background p-2 shadow-md">
       <p className="text-sm font-medium">{label}</p>
-      {payload.map((entry: any, index: number) => (
+      {payload.map((entry, index) => (
         <p key={index} className="text-xs" style={{ color: entry.color }}>
           {`${entry.name}: ${entry.value}`}
         </p>

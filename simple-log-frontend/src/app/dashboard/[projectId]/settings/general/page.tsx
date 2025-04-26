@@ -1,4 +1,3 @@
-import { ApiKeyCard } from "@/components/dashboard/ApiKeyCard";
 import { GeneralTab } from "@/components/dashboard/GeneralTab";
 import { Project } from "@/hooks/useProjects";
 import { Api } from "@/services/api";
@@ -9,7 +8,7 @@ export default async function Home({
   params: Promise<{ projectId: number }>;
 }) {
   const { projectId } = await params;
-  const { data: project, error } = await Api.getInstance().fetch<Project>(
+  const { data: project } = await Api.getInstance().fetch<Project>(
     `/getProject/${projectId}`
   );
 

@@ -68,7 +68,7 @@ export function useApiQuery<T>(endpoint: string, options?: RequestInit) {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
     const result = await api.fetch<T>(endpoint, options);
     setState(result);
-  }, [endpoint]);
+  }, [endpoint, options]);
 
   return { ...state, refetch: fetchData };
 }

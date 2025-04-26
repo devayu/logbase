@@ -19,7 +19,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 export const GeneralTab = ({ project }: { project: Project | null }) => {
-  const { isLoading, error, updateProject } = useUpdateProject();
+  const { isLoading, updateProject } = useUpdateProject();
   const [name, setName] = useState(project?.name);
   const [description, setDescription] = useState(project?.description);
   const router = useRouter();

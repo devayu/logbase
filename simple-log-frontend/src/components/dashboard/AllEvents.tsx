@@ -7,6 +7,7 @@ export const AllEvents = ({ projectId }: { projectId: number }) => {
   const { getAllEvents, data } = useGetAllEvents();
   useEffect(() => {
     getAllEvents(projectId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!data) return null;

@@ -3,13 +3,13 @@
 import { EventsChart } from "@/components/dashboard/EventsChart";
 import { EventsTable } from "@/components/dashboard/EventsTable";
 import { EventStatCard } from "@/components/dashboard/EventStatCard";
-import { useGetEventsOverview } from "@/hooks/useEvents";
+import { Event, useGetEventsOverview } from "@/hooks/useEvents";
 import { Project } from "@/hooks/useProjects";
 import { EventData } from "@/types";
 import { BarChart3, Layers } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-const processEventsData = (events: any[], days: number): EventData[] => {
+const processEventsData = (events: Event[], days: number): EventData[] => {
   const data: EventData[] = [];
   const endDate = new Date();
   const startDate = new Date(endDate);
@@ -71,6 +71,7 @@ export const Overview = ({ project }: { project: Project | null }) => {
     if (project?.id) {
       getEventsOverview(project.id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [project?.id]);
 
   return (
