@@ -61,23 +61,6 @@ export const getAllEvents = async (
       .from(eventsTable)
       .where(eq(eventsTable.project_id, projectId as number))
       .orderBy(desc(eventsTable.timestamp))) ?? [];
-  const groupedEvents = events.reduce((acc, event) => {
-    const eventName = event.type;
-    if (!acc[eventName]) {
-      acc[eventName] = {
-        event: eventName,
-        count: 0,
-        events: [],
-      };
-    }
-    acc[eventName].count++;
-    acc[eventName].events.push({
-      id: event.id,
-      timestamp: event.timestamp,
-      metadata: event.metadata,
-    });
-    return acc;
-  }, {} as Record<string, { event: string; count: number; events: any[] }>);
 
   res.status(200).json({
     status: "ok",
