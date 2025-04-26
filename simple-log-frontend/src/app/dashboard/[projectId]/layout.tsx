@@ -8,7 +8,7 @@ export default async function ProjectLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: { projectId: number };
+  params: Promise<{ projectId: number }>;
 }) {
   const { projectId } = await params;
   const { data: project } = await Api.getInstance().fetch<Project>(
