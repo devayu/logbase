@@ -1,4 +1,6 @@
 "use client";
+import { createProjectAction } from "@/actions/projects";
+import { FromSubmitButton } from "@/components/FormSubmitButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -10,8 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useCreateProject } from "@/hooks/useProjects";
-import { Loader2, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -20,20 +21,6 @@ export const NewProjectCard = () => {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const { isLoading, createProject } = useCreateProject();
-
-  const handleAddProject = async () => {
-    const newProject = await createProject({
-      projectName: name,
-      description,
-    });
-    if (newProject) {
-      router.push(`/dashboard/${newProject.id}`);
-      setOpen(false);
-      setName("");
-      setDescription("");
-    }
-  };
 
   return (
     <>
@@ -50,43 +37,73 @@ export const NewProjectCard = () => {
       </Card>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Create a new project</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-medium">
-                Project name
-              </label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Enter project name"
-              />
+          <form
+            action={async () => {
+              const newProject = await createProjectAction({
+                name,
+                description,
+              });
+              if (newProject) {
+                const isToShowSDKIntegration =
+                  window.localStorage.getItem("dontShowSDKIntegration") ===
+                    null ||
+                  window.localStorage.getItem("dontShowSDKIntegration") ===
+                    "false";
+                if (isToShowSDKIntegration) {
+                  router.push(
+                    `/dashboard/${newProject.id}/settings/sdk-integration`
+                  );
+                } else {
+                  router.push(`/dashboard/${newProject.id}/overview`);
+                }
+
+                setOpen(false);
+                setName("");
+                setDescription("");
+              }
+            }}
+          >
+            <DialogHeader>
+              <DialogTitle>Create a new project</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <label htmlFor="name" className="text-sm font-medium">
+                  Project name
+                </label>
+                <Input
+                  id="name"
+                  name="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Enter project name"
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="description" className="text-sm font-medium">
+                  Description
+                </label>
+                <Textarea
+                  id="description"
+                  name="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Describe your project"
+                  rows={3}
+                />
+              </div>
             </div>
-            <div className="space-y-2">
-              <label htmlFor="description" className="text-sm font-medium">
-                Description
-              </label>
-              <Textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Describe your project"
-                rows={3}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleAddProject} disabled={isLoading}>
-              {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
-              {isLoading ? "Please wait..." : "Create Project"}
-            </Button>
-          </DialogFooter>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setOpen(false)}
+              >
+                Cancel
+              </Button>
+              <FromSubmitButton text="Create Project" />
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </>

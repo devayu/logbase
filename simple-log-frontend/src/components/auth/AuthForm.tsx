@@ -1,10 +1,19 @@
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
+"use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -14,19 +23,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { loginUser, registerUser } from "@/services/auth";
+import { loginUserAction, registerUserAction } from "@/auth/actions/auth";
+import { FromSubmitButton } from "@/components/FormSubmitButton";
 
 const authSchema = z.object({
+  name: z.string().min(1),
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
@@ -36,6 +39,7 @@ type AuthFormValues = z.infer<typeof authSchema>;
 export const AuthForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [selectedTab, setSelectedTab] = useState("login");
   const { toast } = { toast: ({}) => {} }; // TODO: add toast component;
   const navigate = useRouter();
 
@@ -44,58 +48,59 @@ export const AuthForm = () => {
     defaultValues: {
       email: "",
       password: "",
+      name: "",
     },
   });
 
-  const onSubmit = async (values: AuthFormValues, isRegister: boolean) => {
-    setIsLoading(true);
-    try {
-      if (isRegister) {
-        await registerUser({
-          email: values.email,
-          password: values.password,
-        });
-        toast({
-          title: "Registration successful!",
-          description: "Please log in with your new account.",
-        });
-      } else {
-        await loginUser({
-          email: values.email,
-          password: values.password,
-        });
-        toast({
-          title: "Login successful!",
-          description: "Welcome back to App Insight Central.",
-        });
-        navigate.push("/dashboard");
-      }
-    } catch {
-      toast({
-        title: "Authentication error",
-        description: "Please check your credentials and try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+  console.log(selectedTab);
   return (
     <Card className="w-full max-w-md border border-border/30 shadow-lg">
       <CardHeader>
         <CardTitle className="text-center text-2xl font-bold">
-          <span className="gradient-text">App Insight Central</span>
+          <span className="gradient-text">Simple Log</span>
         </CardTitle>
       </CardHeader>
-      <Tabs defaultValue="login" className="w-full">
+      <Tabs
+        defaultValue="login"
+        className="w-full"
+        value={selectedTab}
+        onValueChange={(activeTab) => setSelectedTab(activeTab)}
+      >
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="login">Login</TabsTrigger>
           <TabsTrigger value="register">Register</TabsTrigger>
         </TabsList>
         <CardContent className="pt-6">
           <Form {...form}>
-            <form className="space-y-4">
+            <form
+              className="space-y-4"
+              action={async (formData: FormData) => {
+                if (selectedTab === "login") {
+                  loginUserAction(formData);
+                } else {
+                  registerUserAction(formData);
+                }
+              }}
+            >
+              {selectedTab === "register" && (
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="John doe"
+                          disabled={isLoading}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
               <FormField
                 control={form.control}
                 name="email"
@@ -149,31 +154,20 @@ export const AuthForm = () => {
                   </FormItem>
                 )}
               />
+              <CardFooter>
+                <TabsContent value="login" className="mt-0 w-full">
+                  <FromSubmitButton loadingText="Logging in..." text="Login" />
+                </TabsContent>
+                <TabsContent value="register" className="mt-0 w-full">
+                  <FromSubmitButton
+                    loadingText="Creating account.."
+                    text="Create account"
+                  />
+                </TabsContent>
+              </CardFooter>
             </form>
           </Form>
         </CardContent>
-        <CardFooter>
-          <TabsContent value="login" className="mt-0 w-full">
-            <Button
-              className="w-full"
-              disabled={isLoading}
-              onClick={form.handleSubmit((data) => onSubmit(data, false))}
-            >
-              {isLoading ? "Logging in..." : "Login"}
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </TabsContent>
-          <TabsContent value="register" className="mt-0 w-full">
-            <Button
-              className="w-full"
-              disabled={isLoading}
-              onClick={form.handleSubmit((data) => onSubmit(data, true))}
-            >
-              {isLoading ? "Creating account..." : "Create account"}
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </TabsContent>
-        </CardFooter>
       </Tabs>
     </Card>
   );

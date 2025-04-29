@@ -4,17 +4,9 @@ import { useRouter } from "next/navigation";
 import { BarChart2, Zap, Shield, Code } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { isAuthenticated } from "@/services/auth";
 
 export default function Home() {
   const router = useRouter();
-
-  useEffect(() => {
-    // If user is already authenticated, redirect to dashboard
-    if (isAuthenticated()) {
-      router.push("/dashboard");
-    }
-  }, [router]);
 
   const features = [
     {

@@ -17,8 +17,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Project, useToggleProjectStatus } from "@/hooks/useProjects";
+import { useToggleProjectStatus } from "@/hooks/useProjects";
 import { cn, formatDate } from "@/lib/utils";
+import { Project } from "@/prismaTypes";
 import {
   ArchiveX,
   Ellipsis,
@@ -30,7 +31,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export const ProjectCards = ({ projects }: { projects: Project[] | null }) => {
+export const ProjectCards = ({ projects }: { projects?: Project[] | null }) => {
   const router = useRouter();
   const { toggleProjectStatus } = useToggleProjectStatus();
   const [deleteDialog, setDeleteDialog] = useState<DeleteDialogState>({
@@ -112,9 +113,9 @@ interface ProjectCardProps {
   name: string;
   status: "ACTIVE" | "PAUSED";
   plan: "BASIC" | "PREMIUM";
-  description: string;
-  createdAt: string;
-  updatedAt: string;
+  description: string | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
   onProjectClick: (id: number) => void;
   onProjectPause: (id: number, status: ProjectCardProps["status"]) => void;
   onDeleteClick: (id: number, name: string) => void;

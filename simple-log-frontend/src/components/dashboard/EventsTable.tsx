@@ -21,6 +21,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Event } from "@/hooks/useEvents";
 import { cn } from "@/lib/utils";
+import { Export } from "@/components/dashboard/ExportBtn";
 
 const getColorForEventType = (eventType: string) => {
   if (eventType.includes("error")) {
@@ -75,16 +76,21 @@ export const EventsTable = ({
   const eventTypes = Array.from(
     new Set(eventsToShow.map((event) => event.type))
   );
+  const generateExportFileName = () => {
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().split("T")[0];
+    return `${eventTypeFilter}_events_${formattedDate}.csv`;
+  };
 
   return (
     <Card className="overflow-hidden border border-border/30 gap-2">
       <CardHeader className="px-6">
         <CardTitle className="text-lg font-medium flex justify-between items-center">
           <span>Recent Events</span>
-          <Button variant="outline" size="sm">
-            <DownloadCloud className="mr-2 h-4 w-4" />
-            Export
-          </Button>
+          <Export
+            data={filteredEvents}
+            fileName={generateExportFileName()}
+          ></Export>
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">

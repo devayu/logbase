@@ -4,11 +4,11 @@ import { EventsChart } from "@/components/dashboard/EventsChart";
 import { EventsTable } from "@/components/dashboard/EventsTable";
 import { EventStatCard } from "@/components/dashboard/EventStatCard";
 import { Event, useGetEventsOverview } from "@/hooks/useEvents";
-import { Project } from "@/hooks/useProjects";
+// import { Project } from "@/hooks/useProjects";
 import { EventData } from "@/types";
 import { BarChart3, Layers } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-
+import { Project } from "@/prismaTypes";
 const processEventsData = (events: Event[], days: number): EventData[] => {
   const data: EventData[] = [];
   const endDate = new Date();

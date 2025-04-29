@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { isClientSide } from "@/lib/utils";
 import { CopyIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -70,10 +71,11 @@ trackEvent("test", { testing: "metadata" })
     }
   };
   const handleDontShowAgain = (checked: boolean) => {
+    if (!isClientSide()) return;
     if (checked) {
-      localStorage.setItem("showSDKIntegration", "true");
+      localStorage.setItem("dontShowSDKIntegration", "true");
     } else {
-      localStorage.removeItem("showSDKIntegration");
+      localStorage.removeItem("dontShowSDKIntegration");
     }
   };
   const style = getThemeToUse();
@@ -172,12 +174,19 @@ trackEvent("test", { testing: "metadata" })
         </div>
         <div className="flex items-center mt-4 justify-between">
           <div className="space-x-2 flex items-center">
-            <Checkbox id="dontShow" onCheckedChange={handleDontShowAgain} />
+            <Checkbox
+              id="dontShow"
+              onCheckedChange={handleDontShowAgain}
+              defaultChecked={
+                isClientSide() &&
+                localStorage.getItem("dontShowSDKIntegration") === "true"
+              }
+            />
             <label
               htmlFor="dontShow"
               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
-              Show SDK integration for new projects
+              {`Don't Show SDK integration for new projects`}
             </label>
           </div>
         </div>
