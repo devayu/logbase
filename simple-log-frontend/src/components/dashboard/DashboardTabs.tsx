@@ -1,6 +1,12 @@
 "use client";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, ChartLine, Settings } from "lucide-react";
+import {
+  Activity,
+  BarChart3,
+  ChartLine,
+  LayoutDashboard,
+  Settings,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 const DEFAULT_VALUES = ["overview", "all-events", "settings"];
@@ -15,16 +21,17 @@ export const DashboardTabs = ({ projectId }: { projectId: number }) => {
     <div className="border-b">
       <div className="flex h-16 items-center px-4">
         <Tabs defaultValue={defaultValue} className="w-full">
-          <TabsList>
+          <TabsList className=" bg-transparent">
             <TabsTrigger value="overview" asChild>
               <Link href={`/dashboard/${projectId}/overview`}>
-                <BarChart3 className="h-4 w-4" />
+                <LayoutDashboard className="h-4 w-4" />
                 Overview
               </Link>
             </TabsTrigger>
+
             <TabsTrigger value="all-events" asChild>
               <Link href={`/dashboard/${projectId}/all-events`}>
-                <ChartLine className="h-4 w-4" />
+                <Activity className="h-4 w-4" />
                 All events
               </Link>
             </TabsTrigger>

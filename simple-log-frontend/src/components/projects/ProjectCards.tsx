@@ -196,7 +196,7 @@ const ProjectCard = ({
         )}
       </div>
       {status === "PAUSED" && (
-        <span className="text-xs flex items-center gap-1 text-yellow-600/70">
+        <span className="text-xs flex items-center gap-1 text-orange-400/70">
           <PauseIcon className="h-3 w-3" />
           Paused
         </span>

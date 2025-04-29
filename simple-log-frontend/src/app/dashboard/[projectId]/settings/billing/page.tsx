@@ -1,6 +1,6 @@
+import { getProjectAction } from "@/actions/projects";
 import { PlanUpgradeCard } from "@/components/dashboard/PlanUpgradeCard";
-import { Project } from "@/hooks/useProjects";
-import { Api } from "@/services/api";
+import { ProjectNotFound } from "@/components/dashboard/ProjectNotFound";
 
 export default async function Home({
   params,
@@ -8,8 +8,9 @@ export default async function Home({
   params: Promise<{ projectId: number }>;
 }) {
   const { projectId } = await params;
-  const { data: project } = await Api.getInstance().fetch<Project>(
-    `/getProject/${projectId}`
-  );
+  const project = await getProjectAction(Number(projectId));
+  if (!project) {
+    return <ProjectNotFound />;
+  }
   return <PlanUpgradeCard currentPlan={project?.plan}></PlanUpgradeCard>;
 }

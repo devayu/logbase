@@ -3,12 +3,12 @@
 import { EventsChart } from "@/components/dashboard/EventsChart";
 import { EventsTable } from "@/components/dashboard/EventsTable";
 import { EventStatCard } from "@/components/dashboard/EventStatCard";
-import { Event, useGetEventsOverview } from "@/hooks/useEvents";
 // import { Project } from "@/hooks/useProjects";
 import { EventData } from "@/types";
 import { BarChart3, Layers } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Project } from "@/prismaTypes";
+import { Event, EventMetadata, Project } from "@/prismaTypes";
+import { EventsOverview } from "@/actions/events";
 const processEventsData = (events: Event[], days: number): EventData[] => {
   const data: EventData[] = [];
   const endDate = new Date();
@@ -31,6 +31,7 @@ const processEventsData = (events: Event[], days: number): EventData[] => {
   const usersByDate = new Map<string, Set<string>>();
 
   events.forEach((event) => {
+    const metadata = event.metadata as EventMetadata;
     const eventDate = new Date(event.timestamp);
     const dateStr = new Intl.DateTimeFormat("en-US", {
       month: "short",
@@ -41,11 +42,11 @@ const processEventsData = (events: Event[], days: number): EventData[] => {
     if (dayData) {
       dayData.events++;
 
-      if (event.metadata?.ipAddress) {
+      if (metadata?.ipAddress) {
         if (!usersByDate.has(dateStr)) {
           usersByDate.set(dateStr, new Set());
         }
-        usersByDate.get(dateStr)?.add(event.metadata.ipAddress);
+        usersByDate.get(dateStr)?.add(metadata.ipAddress);
       }
     }
   });
@@ -57,46 +58,43 @@ const processEventsData = (events: Event[], days: number): EventData[] => {
   }));
 };
 
-export const Overview = ({ project }: { project: Project | null }) => {
+export const Overview = ({
+  eventOverview,
+}: {
+  eventOverview: EventsOverview | null;
+}) => {
   const [timeRange, setTimeRange] = useState("7d");
-  const { getEventsOverview, data } = useGetEventsOverview();
 
   const chartData = useMemo(() => {
-    if (!data?.events) return [];
+    if (!eventOverview?.events) return [];
     const days = timeRange === "7d" ? 7 : timeRange === "14d" ? 14 : 30;
-    return processEventsData(data.events, days);
-  }, [data?.events, timeRange]);
-
-  useEffect(() => {
-    if (project?.id) {
-      getEventsOverview(project.id);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [project?.id]);
+    return processEventsData(eventOverview.events, days);
+  }, [eventOverview?.events, timeRange]);
 
   return (
     <div className="space-y-4 p-4 md:p-6">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <EventStatCard
           title="Total Events"
-          value={data?.overview.total_events ?? 0}
+          value={eventOverview?.overview.totalEvents ?? 0}
           icon={Layers}
           description="Tracked in the last 30 days"
           trend={{
-            value: data?.overview.growth_percentage ?? 0,
+            value: eventOverview?.overview.growthPercentage ?? 0,
             label: "from last month",
-            positive: (data?.overview.growth_percentage ?? 0) >= 0,
+            positive: (eventOverview?.overview.growthPercentage ?? 0) >= 0,
           }}
         />
         <EventStatCard
           title="Active Users"
-          value={data?.overview.active_users.current ?? 0}
+          value={eventOverview?.overview.activeUsers.current ?? 0}
           icon={BarChart3}
           description="Users who triggered events"
           trend={{
-            value: data?.overview.active_users.growth_percentage ?? 0,
+            value: eventOverview?.overview.activeUsers.growthPercentage ?? 0,
             label: "from last month",
-            positive: (data?.overview.active_users.growth_percentage ?? 0) >= 0,
+            positive:
+              (eventOverview?.overview.activeUsers.growthPercentage ?? 0) >= 0,
           }}
         />
       </div>
@@ -107,7 +105,7 @@ export const Overview = ({ project }: { project: Project | null }) => {
         onTimeRangeChange={setTimeRange}
       />
 
-      <EventsTable events={data?.events} count={5} />
+      <EventsTable events={eventOverview?.events} count={5} />
     </div>
   );
 };

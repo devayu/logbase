@@ -1,5 +1,6 @@
 import { getProjectAction } from "@/actions/projects";
 import { ApiKeyCard } from "@/components/dashboard/ApiKeyCard";
+import { ProjectNotFound } from "@/components/dashboard/ProjectNotFound";
 
 export default async function Home({
   params,
@@ -8,6 +9,9 @@ export default async function Home({
 }) {
   const { projectId } = await params;
   const project = await getProjectAction(Number(projectId));
+  if (!project) {
+    return <ProjectNotFound />;
+  }
   return (
     <ApiKeyCard
       projectId={Number(projectId)}

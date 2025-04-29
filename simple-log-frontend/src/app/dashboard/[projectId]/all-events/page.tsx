@@ -1,7 +1,5 @@
-import { AllEvents } from "@/components/dashboard/AllEvents";
-import { ProjectNotFound } from "@/components/dashboard/ProjectNotFound";
-import { Project } from "@/hooks/useProjects";
-import { Api } from "@/services/api";
+import { getAllEventsAction } from "@/actions/events";
+import { EventsTable } from "@/components/dashboard/EventsTable";
 
 export default async function Home({
   params,
@@ -9,15 +7,10 @@ export default async function Home({
   params: Promise<{ projectId: string }>;
 }) {
   const { projectId } = await params;
-  const { data: project, error } = await Api.getInstance().fetch<Project>(
-    `/getProject/${projectId}`,
-    {
-      cache: "no-store",
-    }
+  const events = await getAllEventsAction(Number(projectId));
+  return (
+    <div className="p-4">
+      <EventsTable events={events} heading="All Events"></EventsTable>
+    </div>
   );
-
-  if (error || !project) {
-    return <ProjectNotFound />;
-  }
-  return <AllEvents projectId={+projectId}></AllEvents>;
 }

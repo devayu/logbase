@@ -6,14 +6,16 @@ export interface Event {
   type: string;
   timestamp: string;
   /* eslint-disable @typescript-eslint/no-explicit-any */
-  metadata: Record<string, any> & {
-    source: string;
-    ipAddress: string;
-    city: string;
-    region: string;
-    country: string;
-    path: string;
-  };
+  metadata:
+    | (Record<string, any> & {
+        source: string;
+        ipAddress: string;
+        city: string;
+        region: string;
+        country: string;
+        path: string;
+      })
+    | null;
 }
 
 export async function getServerProjects(): Promise<ApiState<Event[]>> {

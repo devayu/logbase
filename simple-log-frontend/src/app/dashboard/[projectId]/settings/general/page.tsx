@@ -1,7 +1,6 @@
 import { getProjectAction } from "@/actions/projects";
 import { GeneralTab } from "@/components/dashboard/GeneralTab";
-import { Project } from "@/hooks/useProjects";
-import { Api } from "@/services/api";
+import { ProjectNotFound } from "@/components/dashboard/ProjectNotFound";
 
 export default async function Home({
   params,
@@ -10,6 +9,8 @@ export default async function Home({
 }) {
   const { projectId } = await params;
   const project = await getProjectAction(Number(projectId));
-
+  if (!project) {
+    return <ProjectNotFound />;
+  }
   return <GeneralTab project={project}></GeneralTab>;
 }

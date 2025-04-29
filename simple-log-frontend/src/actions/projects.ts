@@ -2,10 +2,8 @@
 import { getClientId } from "@/auth/currentUser";
 import { prisma } from "@/lib/db";
 import { generateApiKey } from "@/lib/utils";
+import { ProjectIdSchema, ProjectIdT } from "@/prismaTypes";
 import { z } from "zod";
-
-const ProjectIdSchema = z.number();
-export type ProjectIdT = z.infer<typeof ProjectIdSchema>;
 
 export const getProjectsAction = async (client_id?: string) => {
   if (!client_id) {
@@ -22,7 +20,7 @@ export const getProjectsAction = async (client_id?: string) => {
   });
   return projects;
 };
-export const getProjectAction = async (project_id: number) => {
+export const getProjectAction = async (project_id: ProjectIdT) => {
   const { success } = ProjectIdSchema.safeParse(project_id);
   if (!success) {
     return null;

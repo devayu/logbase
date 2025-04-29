@@ -1,3 +1,4 @@
+import { getEventsOverviewAction } from "@/actions/events";
 import { getProjectAction } from "@/actions/projects";
 import { Overview } from "@/components/dashboard/Overview";
 import { ProjectNotFound } from "@/components/dashboard/ProjectNotFound";
@@ -8,10 +9,10 @@ export default async function Home({
   params: Promise<{ projectId: string }>;
 }) {
   const { projectId } = await params;
-  const project = await getProjectAction(Number(projectId));
+  const projectEventOverview = await getEventsOverviewAction(Number(projectId));
 
-  if (!project) {
+  if (!projectEventOverview) {
     return <ProjectNotFound />;
   }
-  return <Overview project={project}></Overview>;
+  return <Overview eventOverview={projectEventOverview}></Overview>;
 }

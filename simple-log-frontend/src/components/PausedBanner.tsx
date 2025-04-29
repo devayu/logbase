@@ -34,7 +34,7 @@ export const PausedBanner = ({ projectId }: { projectId: number }) => {
   };
   return (
     <div className="p-4 pb-0">
-      <div className="bg-amber-200 text-black px-4 py-2 opacity-90 rounded-sm">
+      <div className="bg-orange-200 text-black px-4 py-2 opacity-90 rounded-sm">
         <div className="flex items-center">
           <AlertCircle className="h-6 w-6 mr-4" />
           <div className="flex flex-col">
@@ -50,7 +50,7 @@ export const PausedBanner = ({ projectId }: { projectId: number }) => {
             }}
             type="submit"
             variant="default"
-            className="ml-auto bg-amber-300 hover:bg-amber-400 text-black"
+            className="ml-auto bg-orange-300 hover:bg-orange-400 text-black"
           >
             <Play className="h-4 w-4" />
             Resume Project
