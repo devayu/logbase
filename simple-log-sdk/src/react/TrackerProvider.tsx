@@ -1,7 +1,8 @@
 "use client";
 
 import React, { createContext, useEffect, useRef, useState } from "react";
-import { InitOptions, SimpleLogTracker } from "../core/tracker";
+import { SimpleLogTracker } from "../core/tracker";
+import { InitOptions } from "../core/types";
 
 type TrackerContextType = SimpleLogTracker | null;
 
