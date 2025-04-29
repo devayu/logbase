@@ -54,7 +54,7 @@ export class SimpleLogTracker {
 
   public static getInstance(): SimpleLogTracker {
     if (typeof window === "undefined") {
-      throw new Error("SimpleLogTracker must be used in the browser");
+      console.error("SimpleLogTracker must be used in the browser");
     }
 
     // Check if already stored on window
@@ -94,7 +94,7 @@ export class SimpleLogTracker {
 
   public async verifyApiKey() {
     try {
-      const verifyRes = await fetch(`${this.endpoint}/verifyProjectKey`, {
+      const verifyRes = await fetch(`${this.endpoint}/api/verifyProjectKey`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -135,7 +135,7 @@ export class SimpleLogTracker {
     };
 
     try {
-      await fetch(`${this.endpoint}/trackEvent`, {
+      await fetch(`${this.endpoint}/api/trackEvent`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
