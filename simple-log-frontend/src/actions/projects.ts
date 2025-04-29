@@ -1,6 +1,6 @@
 "use server";
 import { getClientId } from "@/auth/currentUser";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/db/db";
 import { generateApiKey } from "@/lib/utils";
 import { ProjectIdSchema, ProjectIdT } from "@/types";
 import { z } from "zod";

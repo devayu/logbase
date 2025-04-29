@@ -101,7 +101,7 @@ export const NewProjectCard = () => {
               >
                 Cancel
               </Button>
-              <FormSubmitButton text="Create Project" />
+              <FormSubmitButton>Create Project</FormSubmitButton>
             </DialogFooter>
           </form>
         </DialogContent>

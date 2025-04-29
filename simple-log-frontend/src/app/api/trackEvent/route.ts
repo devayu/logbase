@@ -1,5 +1,5 @@
 import { corsHeaders, handleOptions } from "@/lib/cors";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/db/db";
 import { getDeviceType } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 

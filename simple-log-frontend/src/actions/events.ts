@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/db";
+import { prisma } from "@/db/db";
 import { ProjectIdSchema, ProjectIdT } from "@/types";
 
 export const getAllEventsAction = async (project_id: ProjectIdT) => {

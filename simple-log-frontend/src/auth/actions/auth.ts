@@ -1,6 +1,6 @@
 "use server";
 import { createUserSession, removeUserFromSession } from "@/auth/core/session";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/db/db";
 import { hashPassword, passwordCompare } from "@/lib/passwordHasher";
 import { redirect } from "next/navigation";
 

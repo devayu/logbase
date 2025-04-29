@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/db";
+import { prisma } from "@/db/db";
 import { NextRequest, NextResponse } from "next/server";
 import { corsHeaders, handleOptions } from "@/lib/cors";
 
