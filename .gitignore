@@ -21,6 +21,4 @@ simple-log-sdk/.env
 # Ignore build outputs
 simple-log-backend/dist/
 simple-log-frontend/dist/
-simple-log-sdk/dist/
-**/dist/
 **/build/

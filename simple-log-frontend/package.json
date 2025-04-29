@@ -10,8 +10,8 @@
     "preview": "next start",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate",
-    "db:push": "prisma push",
-    "db:pull": "prisma pull",
+    "db:push": "prisma db push",
+    "db:pull": "prisma db pull",
     "db:studio": "prisma studio"
   },
   "dependencies": {
@@ -55,6 +55,7 @@
     "embla-carousel-react": "^8.3.0",
     "export-to-csv": "^1.4.0",
     "input-otp": "^1.2.4",
+    "jose": "^6.0.10",
     "json-to-csv-export": "^3.1.0",
     "lucide-react": "^0.488.0",
     "next": "15.2.3",
