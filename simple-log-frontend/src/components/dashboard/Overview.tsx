@@ -4,11 +4,12 @@ import { EventsChart } from "@/components/dashboard/EventsChart";
 import { EventsTable } from "@/components/dashboard/EventsTable";
 import { EventStatCard } from "@/components/dashboard/EventStatCard";
 // import { Project } from "@/hooks/useProjects";
-import { EventData } from "@/types";
-import { BarChart3, Layers } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import { Event, EventMetadata, Project } from "@/prismaTypes";
 import { EventsOverview } from "@/actions/events";
+import { EventMetadata } from "@/types";
+import { EventData } from "@/types";
+import { Event } from "@prisma/client";
+import { BarChart3, Layers } from "lucide-react";
+import { useMemo, useState } from "react";
 const processEventsData = (events: Event[], days: number): EventData[] => {
   const data: EventData[] = [];
   const endDate = new Date();
@@ -105,7 +106,11 @@ export const Overview = ({
         onTimeRangeChange={setTimeRange}
       />
 
-      <EventsTable events={eventOverview?.events} count={5} />
+      <EventsTable
+        events={eventOverview?.events}
+        count={5}
+        projectName={eventOverview?.projectName}
+      />
     </div>
   );
 };

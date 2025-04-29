@@ -59,9 +59,11 @@ export const Header = ({ user }: HeaderProps) => {
                 <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
                   <BarChart2 className="h-5 w-5 text-primary-foreground" />
                 </div>
-                <span className="text-lg font-bold gradient-text">
-                  Simple Log
-                </span>
+                <Link href="/">
+                  <span className="text-lg font-bold gradient-text">
+                    Simple Log
+                  </span>
+                </Link>
               </div>
               <nav className="grid gap-2 py-4">
                 {navItems.map((item, index) => (
@@ -93,7 +95,9 @@ export const Header = ({ user }: HeaderProps) => {
           <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
             <BarChart2 className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="text-lg font-bold gradient-text">Simple Log</span>
+          <Link href="/">
+            <span className="text-lg font-bold gradient-text">Simple Log</span>
+          </Link>
         </div>
 
         <nav className="hidden md:ml-8 md:flex md:gap-4 lg:gap-6">

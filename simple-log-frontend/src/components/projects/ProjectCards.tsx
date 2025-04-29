@@ -18,9 +18,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useToggleProjectStatus } from "@/hooks/useProjects";
 import { cn, formatDate } from "@/lib/utils";
-import { Project } from "@/prismaTypes";
+import { Project } from "@prisma/client";
 import {
   ArchiveX,
   Ellipsis,
@@ -34,7 +33,6 @@ import { toast } from "sonner";
 
 export const ProjectCards = ({ projects }: { projects?: Project[] | null }) => {
   const router = useRouter();
-  const { toggleProjectStatus } = useToggleProjectStatus();
   const [deleteDialog, setDeleteDialog] = useState<DeleteDialogState>({
     id: null,
     open: false,

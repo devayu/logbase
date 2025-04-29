@@ -2,7 +2,7 @@
 import { Filter, Search } from "lucide-react";
 import { useState } from "react";
 
-import { Export } from "@/components/dashboard/ExportBtn";
+import { ExportDropdown } from "@/components/dashboard/ExportDropdown";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -21,7 +21,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn, formatDate } from "@/lib/utils";
-import { Event, EventMetadata } from "@/prismaTypes";
+import { EventMetadata } from "@/types";
+import { Event } from "@prisma/client";
 
 const getColorForEventType = (eventType: string) => {
   eventType = eventType.toLowerCase();
@@ -47,8 +48,10 @@ export const EventsTable = ({
   events = [],
   count,
   heading = "Recent Events",
+  projectName,
 }: {
   events: Event[] | undefined;
+  projectName?: string;
   count?: number | undefined;
   heading?: string;
 }) => {
@@ -76,7 +79,7 @@ export const EventsTable = ({
   const generateExportFileName = () => {
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().split("T")[0];
-    return `${eventTypeFilter}_events_${formattedDate}.csv`;
+    return `${projectName?.toUpperCase()} - ${eventTypeFilter}_events_${formattedDate}`;
   };
 
   return (
@@ -84,10 +87,10 @@ export const EventsTable = ({
       <CardHeader className="px-6">
         <CardTitle className="text-lg font-medium flex justify-between items-center">
           <span>{heading}</span>
-          <Export
-            data={filteredEvents}
+          <ExportDropdown
+            events={filteredEvents}
             fileName={generateExportFileName()}
-          ></Export>
+          ></ExportDropdown>
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
@@ -118,7 +121,7 @@ export const EventsTable = ({
             </Select>
           </div>
         </div>
-        <div className="max-h-[400px] overflow-auto px-4">
+        <div className="overflow-auto px-4">
           <Table>
             <TableHeader className="sticky top-0 border-b bg-accent/50 backdrop-blur">
               <TableRow>

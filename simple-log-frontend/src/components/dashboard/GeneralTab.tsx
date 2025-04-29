@@ -14,15 +14,13 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useUpdateProject } from "@/hooks/useProjects";
-import { Project } from "@/prismaTypes";
-import { ArrowUpFromLine, Loader2, Trash2 } from "lucide-react";
+import { Project } from "@prisma/client";
+import { ArrowUpFromLine, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export const GeneralTab = ({ project }: { project: Project | null }) => {
-  const { isLoading, updateProject } = useUpdateProject();
   const [name, setName] = useState(project?.name);
   const [description, setDescription] = useState(project?.description);
   const router = useRouter();

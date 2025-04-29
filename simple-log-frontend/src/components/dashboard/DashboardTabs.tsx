@@ -1,12 +1,6 @@
 "use client";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Activity,
-  BarChart3,
-  ChartLine,
-  LayoutDashboard,
-  Settings,
-} from "lucide-react";
+import { Activity, LayoutDashboard, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 const DEFAULT_VALUES = ["overview", "all-events", "settings"];

@@ -5,9 +5,19 @@ import { ProjectIdSchema, ProjectIdT } from "@/prismaTypes";
 
 export const getAllEventsAction = async (project_id: ProjectIdT) => {
   const { success } = ProjectIdSchema.safeParse(project_id);
-  if (!success) {
-    return;
-  }
+  if (!success) return;
+
+  const project = await prisma.project.findFirst({
+    select: {
+      name: true,
+    },
+    where: {
+      id: project_id,
+    },
+  });
+
+  if (!project) return;
+
   const events = await prisma.event.findMany({
     where: {
       projectId: project_id,
@@ -16,7 +26,10 @@ export const getAllEventsAction = async (project_id: ProjectIdT) => {
       timestamp: "desc",
     },
   });
-  return events;
+  return {
+    events,
+    projectName: project.name,
+  };
 };
 
 export const getEventsOverviewAction = async (project_id: ProjectIdT) => {
@@ -24,6 +37,16 @@ export const getEventsOverviewAction = async (project_id: ProjectIdT) => {
   if (!success) {
     return;
   }
+  const project = await prisma.project.findFirst({
+    select: {
+      name: true,
+    },
+    where: {
+      id: project_id,
+    },
+  });
+
+  if (!project) return;
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
   const sixtyDaysAgo = new Date();
@@ -41,6 +64,7 @@ export const getEventsOverviewAction = async (project_id: ProjectIdT) => {
   });
   const currentActiveUsers = new Set(
     currentMonthEvents
+      /* eslint-disable @typescript-eslint/no-explicit-any */
       .map((event) => (event.metadata as Record<string, any>)?.ipAddress)
       .filter(Boolean)
   ).size;
@@ -57,6 +81,7 @@ export const getEventsOverviewAction = async (project_id: ProjectIdT) => {
   });
   const previousActiveUsers = new Set(
     previousMonthEvents
+      /* eslint-disable @typescript-eslint/no-explicit-any */
       .map((event) => (event.metadata as Record<string, any>)?.ipAddress)
       .filter(Boolean)
   ).size;
@@ -72,6 +97,7 @@ export const getEventsOverviewAction = async (project_id: ProjectIdT) => {
       : ((currentActiveUsers - previousActiveUsers) / previousActiveUsers) *
         100;
   return {
+    projectName: project.name,
     events: currentMonthEvents,
     overview: {
       totalEvents: currentCount,

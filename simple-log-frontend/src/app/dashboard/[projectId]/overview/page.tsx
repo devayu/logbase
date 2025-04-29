@@ -1,5 +1,4 @@
 import { getEventsOverviewAction } from "@/actions/events";
-import { getProjectAction } from "@/actions/projects";
 import { Overview } from "@/components/dashboard/Overview";
 import { ProjectNotFound } from "@/components/dashboard/ProjectNotFound";
 

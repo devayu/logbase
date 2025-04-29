@@ -1,7 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -37,11 +36,8 @@ const authSchema = z.object({
 type AuthFormValues = z.infer<typeof authSchema>;
 
 export const AuthForm = () => {
-  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [selectedTab, setSelectedTab] = useState("login");
-  const { toast } = { toast: ({}) => {} }; // TODO: add toast component;
-  const navigate = useRouter();
 
   const form = useForm<AuthFormValues>({
     resolver: zodResolver(authSchema),
@@ -90,11 +86,7 @@ export const AuthForm = () => {
                     <FormItem>
                       <FormLabel>Name</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="John doe"
-                          disabled={isLoading}
-                          {...field}
-                        />
+                        <Input placeholder="John doe" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -111,7 +103,6 @@ export const AuthForm = () => {
                       <Input
                         placeholder="you@example.com"
                         autoComplete="email"
-                        disabled={isLoading}
                         {...field}
                       />
                     </FormControl>
@@ -129,7 +120,6 @@ export const AuthForm = () => {
                       <div className="relative">
                         <Input
                           type={showPassword ? "text" : "password"}
-                          disabled={isLoading}
                           {...field}
                         />
                         <Button
@@ -156,13 +146,14 @@ export const AuthForm = () => {
               />
               <CardFooter>
                 <TabsContent value="login" className="mt-0 w-full">
-                  <FormSubmitButton loadingText="Logging in..." text="Login" />
+                  <FormSubmitButton loadingText="Logging in...">
+                    Login
+                  </FormSubmitButton>
                 </TabsContent>
                 <TabsContent value="register" className="mt-0 w-full">
-                  <FormSubmitButton
-                    loadingText="Creating account.."
-                    text="Create account"
-                  />
+                  <FormSubmitButton loadingText="Creating account..">
+                    Create account
+                  </FormSubmitButton>
                 </TabsContent>
               </CardFooter>
             </form>

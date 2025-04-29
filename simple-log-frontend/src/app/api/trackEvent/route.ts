@@ -64,6 +64,7 @@ export async function POST(req: NextRequest) {
     const geo = await fetch(
       `https://ipinfo.io/${cleanIP}?token=${process.env.IP_INFO_API_KEY}`
     );
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     const data = (await geo.json()) as Record<string, any>;
     const deviceType = getDeviceType(userAgent);
     const updatedMetadata = {

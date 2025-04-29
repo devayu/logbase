@@ -1,13 +1,9 @@
-"use client";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { BarChart2, Zap, Shield, Code } from "lucide-react";
+import { BarChart2, Code, Shield, Zap } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Home() {
-  const router = useRouter();
-
   const features = [
     {
       icon: BarChart2,
@@ -51,19 +47,12 @@ export default function Home() {
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button
-                  size="lg"
-                  onClick={() => router.push("/auth?tab=register")}
-                  className="btn-glow"
-                >
-                  Get Started
-                </Button>
                 <Button size="lg" variant="outline">
                   View Demo
                 </Button>
-                <Button size="lg" onClick={() => router.push("/projects")}>
-                  Projects
-                </Button>
+                <Link href="/projects">
+                  <Button size="lg">Projects</Button>
+                </Link>
               </div>
             </div>
           </div>
@@ -102,13 +91,11 @@ export default function Home() {
                   minutes.
                 </p>
               </div>
-              <Button
-                size="lg"
-                onClick={() => router.push("/auth?tab=register")}
-                className="btn-glow"
-              >
-                Get Started for Free
-              </Button>
+              <Link href="/sign-in">
+                <Button size="lg" className="btn-glow">
+                  Get Started for Free
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
