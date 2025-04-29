@@ -1,33 +1,19 @@
-type InitOptionsWithAutoTrack = {
-  autoTrackRoutes: true;
-  endpoint?: string;
-  router: NextRouter | ReactRouter;
-};
-type InitOptionsWithoutAutoTrack = {
-  autoTrackRoutes: false;
-  endpoint?: string;
-};
+import type { InitOptions, NextRouter, ReactRouter } from "./types";
 
-export type InitOptions =
-  | InitOptionsWithAutoTrack
-  | InitOptionsWithoutAutoTrack;
-
-type NextRouter = {
-  events: {
-    on: (event: string, cb: (url: string) => void) => void;
-    off: (event: string, cb: (url: string) => void) => void;
-  };
-};
-
-type ReactRouter = {
-  listen: (cb: (location: { pathname: string }) => void) => () => void;
-};
-
+/**
+ * Global window interface extension to store SimpleLogTracker instance.
+ */
 declare global {
   interface Window {
+    /** Global instance of SimpleLogTracker */
     __simpleLogInstance?: SimpleLogTracker;
   }
 }
+/**
+ * SimpleLogTracker class for tracking user events and route changes in web applications.
+ * Implements the Singleton pattern to ensure only one instance exists globally.
+ * @class
+ */
 export class SimpleLogTracker {
   private static instance: SimpleLogTracker | null = null;
 
@@ -41,8 +27,12 @@ export class SimpleLogTracker {
   private deduplicationInterval: number = 2000; // 2 seconds
 
   // private constructor() {}
+  /**
+   * Private constructor to prevent direct instantiation.
+   * Restores state from window if available.
+   * @private
+   */
   private constructor() {
-    // Restore state from window if available
     if (typeof window !== "undefined" && window.__simpleLogInstance) {
       const cached = window.__simpleLogInstance;
       this.apiKey = cached.apiKey;
@@ -52,17 +42,26 @@ export class SimpleLogTracker {
     }
   }
 
+  /**
+   * Gets the singleton instance of SimpleLogTracker.
+   * Creates a new instance if one doesn't exist.
+   * @returns {SimpleLogTracker} The singleton instance
+   * @static
+   */
   public static getInstance(): SimpleLogTracker {
-    if (typeof window === "undefined") {
-      throw new Error("SimpleLogTracker must be used in the browser");
+    // Check if we're in a browser environment
+    const isBrowser = typeof window !== "undefined";
+
+    if (!isBrowser) {
+      // Create a new instance for server-side without storing it
+      return new SimpleLogTracker();
     }
 
-    // Check if already stored on window
+    // Browser-side singleton logic
     if (window.__simpleLogInstance) {
       return window.__simpleLogInstance;
     }
 
-    // Check module cache
     if (!this.instance) {
       this.instance = new SimpleLogTracker();
       window.__simpleLogInstance = this.instance;
@@ -71,6 +70,12 @@ export class SimpleLogTracker {
     return this.instance;
   }
 
+  /**
+   * Initializes the tracker with the provided API key and options.
+   * @param {string} apiKey - The API key for authentication
+   * @param {InitOptions} [initOpts] - Optional initialization options
+   * @returns {void}
+   */
   public init(apiKey: string, initOpts?: InitOptions) {
     if (this.apiKey) return; // already initialized
     this.apiKey = apiKey;
@@ -86,15 +91,23 @@ export class SimpleLogTracker {
         this.canAutoTrackEvents &&
         !this.isAutoTrackingInitialized
       ) {
-        this.cleanupFn = this.setupAutoRouteTracking(initOpts.router);
+        this.cleanupFn = this.setupAutoRouteTracking(
+          initOpts.router,
+          initOpts.routeTrackingKey
+        );
         this.isAutoTrackingInitialized = true;
       }
     });
   }
 
+  /**
+   * Verifies the API key with the tracking server.
+   * Sets the canAutoTrackEvents flag based on the server response.
+   * @returns {Promise<void>}
+   */
   public async verifyApiKey() {
     try {
-      const verifyRes = await fetch(`${this.endpoint}/verifyProjectKey`, {
+      const verifyRes = await fetch(`${this.endpoint}/api/verifyProjectKey`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -107,6 +120,14 @@ export class SimpleLogTracker {
       console.error("[SimpleLog SDK] Failed to verify api key", err);
     }
   }
+
+  /**
+   * Tracks a custom event with the provided type and metadata.
+   * Implements deduplication logic for route tracking events.
+   * @param {string} type - The type of event to track
+   * @param {Record<string, any>} metadata - Additional data for the event
+   * @returns {Promise<void>}
+   */
   public async trackEvent(type: string, metadata: Record<string, any>) {
     if (!this.apiKey) {
       console.warn("[SimpleLog SDK] You must call init() first.");
@@ -135,7 +156,7 @@ export class SimpleLogTracker {
     };
 
     try {
-      await fetch(`${this.endpoint}/trackEvent`, {
+      await fetch(`${this.endpoint}/api/trackEvent`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -148,20 +169,20 @@ export class SimpleLogTracker {
     }
   }
 
+  /**
+   * Sets up automatic route tracking based on the provided router type.
+   * Supports Next.js Router, React Router, and vanilla JavaScript history API.
+   * @param {NextRouter | ReactRouter} [router] - The router instance
+   * @param {string} [routeTrackingKey] - Custom key for route tracking events
+   * @returns {() => void} Cleanup function to remove event listeners
+   * @private
+   */
   private setupAutoRouteTracking(
-    router?: NextRouter | ReactRouter
+    router?: NextRouter | ReactRouter,
+    routeTrackingKey?: string
   ): () => void {
-    let eventName = "changed";
-    const navType = (
-      performance.getEntriesByType(
-        "navigation"
-      )[0] as PerformanceNavigationTiming
-    ).type;
-    if (navType) {
-      eventName = navType;
-    }
     const track = (path: string) => {
-      this.trackEvent(`route_${eventName}`, {
+      this.trackEvent(this.getRouteTrackingKey(routeTrackingKey), {
         path,
         timestamp: new Date().toISOString(),
       });
@@ -217,6 +238,11 @@ export class SimpleLogTracker {
     };
   }
 
+  /**
+   * Cleans up the tracker instance by removing event listeners and resetting state.
+   * Should be called when the tracker is no longer needed.
+   * @returns {void}
+   */
   public destroy() {
     if (this.cleanupFn) {
       this.cleanupFn();
@@ -226,5 +252,29 @@ export class SimpleLogTracker {
     this.endpoint = "";
     this.isAutoTrackingInitialized = false;
     this.lastTrackedPath = "";
+  }
+
+  /**
+   * Generates the tracking key for route change events.
+   * Uses custom key if provided, otherwise generates based on navigation type.
+   * @param {string} [routeTrackingKey] - Custom tracking key
+   * @returns {string} The final tracking key to use
+   * @private
+   */
+  private getRouteTrackingKey(routeTrackingKey?: string) {
+    let trackingKey = "route_changed";
+    if (routeTrackingKey) {
+      trackingKey = routeTrackingKey;
+    } else {
+      const navType = (
+        performance.getEntriesByType(
+          "navigation"
+        )[0] as PerformanceNavigationTiming
+      ).type;
+      if (navType) {
+        trackingKey = `route_${navType}`;
+      }
+    }
+    return trackingKey;
   }
 }

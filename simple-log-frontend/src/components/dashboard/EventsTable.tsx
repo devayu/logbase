@@ -1,7 +1,9 @@
+"use client";
+import { Filter, Search } from "lucide-react";
 import { useState } from "react";
-import { DownloadCloud, Filter, Search } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { ExportDropdown } from "@/components/dashboard/ExportDropdown";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -18,11 +20,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Event } from "@/hooks/useEvents";
-import { cn } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
+import { EventMetadata } from "@/types";
+import { Event } from "@prisma/client";
 
 const getColorForEventType = (eventType: string) => {
+  eventType = eventType.toLowerCase();
   if (eventType.includes("error")) {
     return "bg-destructive";
   }
@@ -33,6 +36,9 @@ const getColorForEventType = (eventType: string) => {
   ) {
     return "bg-green-500";
   }
+  if (eventType.includes("click")) {
+    return "bg-orange-500";
+  }
   if (eventType.includes("route")) {
     return "bg-blue-500";
   }
@@ -41,30 +47,25 @@ const getColorForEventType = (eventType: string) => {
 export const EventsTable = ({
   events = [],
   count,
+  heading = "Recent Events",
+  projectName,
 }: {
   events: Event[] | undefined;
+  projectName?: string;
   count?: number | undefined;
+  heading?: string;
 }) => {
   const eventsToShow = count ? events.slice(0, count) : events;
   const [searchQuery, setSearchQuery] = useState("");
   const [eventTypeFilter, setEventTypeFilter] = useState("all");
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("en-US", {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(date);
-  };
-
   const filteredEvents = eventsToShow.filter((event) => {
+    const metadata = event.metadata as EventMetadata;
     const matchesSearch =
       searchQuery === "" ||
       event.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.metadata.path.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.metadata.source.toLowerCase().includes(searchQuery.toLowerCase());
+      metadata?.path.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      metadata?.source.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesType =
       eventTypeFilter === "all" || event.type === eventTypeFilter;
@@ -75,16 +76,21 @@ export const EventsTable = ({
   const eventTypes = Array.from(
     new Set(eventsToShow.map((event) => event.type))
   );
+  const generateExportFileName = () => {
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().split("T")[0];
+    return `${projectName?.toUpperCase()} - ${eventTypeFilter}_events_${formattedDate}`;
+  };
 
   return (
     <Card className="overflow-hidden border border-border/30 gap-2">
       <CardHeader className="px-6">
         <CardTitle className="text-lg font-medium flex justify-between items-center">
-          <span>Recent Events</span>
-          <Button variant="outline" size="sm">
-            <DownloadCloud className="mr-2 h-4 w-4" />
-            Export
-          </Button>
+          <span>{heading}</span>
+          <ExportDropdown
+            events={filteredEvents}
+            fileName={generateExportFileName()}
+          ></ExportDropdown>
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
@@ -115,7 +121,7 @@ export const EventsTable = ({
             </Select>
           </div>
         </div>
-        <div className="max-h-[400px] overflow-auto px-4">
+        <div className="overflow-auto px-4">
           <Table>
             <TableHeader className="sticky top-0 border-b bg-accent/50 backdrop-blur">
               <TableRow>
@@ -128,33 +134,39 @@ export const EventsTable = ({
             </TableHeader>
             <TableBody>
               {filteredEvents.length > 0 ? (
-                filteredEvents.map((event) => (
-                  <TableRow key={event.id}>
-                    <TableCell className="font-medium">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className={cn(
-                            `w-2 h-2 rounded-full`,
-                            getColorForEventType(event.type)
-                          )}
-                        />
-                        {event.type}
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-mono text-xs">
-                      {event.metadata.path && event.metadata.path}
-                    </TableCell>
-                    <TableCell>
-                      <span className="px-2 py-1 rounded-full text-xs bg-secondary">
-                        {event.metadata.source ?? "unknown"}
-                      </span>
-                    </TableCell>
-                    <TableCell>{formatDate(event.timestamp)}</TableCell>
-                    <TableCell className="font-mono text-xs">
-                      {JSON.stringify(event.metadata)}
-                    </TableCell>
-                  </TableRow>
-                ))
+                filteredEvents.map((event) => {
+                  const metadata = event.metadata as EventMetadata;
+
+                  return (
+                    <TableRow key={event.id}>
+                      <TableCell className="font-medium">
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={cn(
+                              `w-2 h-2 rounded-full`,
+                              getColorForEventType(event.type)
+                            )}
+                          />
+                          {event.type}
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-mono text-xs">
+                        {metadata?.path && metadata.path}
+                      </TableCell>
+                      <TableCell>
+                        <span className="px-2 py-1 rounded-full text-xs bg-secondary">
+                          {metadata?.source ?? "unknown"}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        {formatDate(event.timestamp, true, true)}
+                      </TableCell>
+                      <TableCell className="font-mono text-xs">
+                        {JSON.stringify(event.metadata)}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
               ) : (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-8">

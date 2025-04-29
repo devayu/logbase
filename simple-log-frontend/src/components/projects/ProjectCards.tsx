@@ -1,4 +1,5 @@
 "use client";
+import { toggleProjectStatusAction } from "@/actions/projects";
 import DeleteConfirmationDialog, {
   DeleteDialogState,
 } from "@/components/projects/DeleteProjectDialog";
@@ -17,8 +18,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Project, useToggleProjectStatus } from "@/hooks/useProjects";
 import { cn, formatDate } from "@/lib/utils";
+import { Project } from "@prisma/client";
 import {
   ArchiveX,
   Ellipsis,
@@ -30,9 +31,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export const ProjectCards = ({ projects }: { projects: Project[] | null }) => {
+export const ProjectCards = ({ projects }: { projects?: Project[] | null }) => {
   const router = useRouter();
-  const { toggleProjectStatus } = useToggleProjectStatus();
   const [deleteDialog, setDeleteDialog] = useState<DeleteDialogState>({
     id: null,
     open: false,
@@ -49,9 +49,9 @@ export const ProjectCards = ({ projects }: { projects: Project[] | null }) => {
     if (!projectId) return;
 
     toast.promise(
-      toggleProjectStatus({
+      toggleProjectStatusAction({
         projectId,
-        status,
+        currentStatus: status,
       }),
       {
         loading: `${status === "PAUSED" ? "Resuming" : "Pausing"} project...`,
@@ -112,9 +112,9 @@ interface ProjectCardProps {
   name: string;
   status: "ACTIVE" | "PAUSED";
   plan: "BASIC" | "PREMIUM";
-  description: string;
-  createdAt: string;
-  updatedAt: string;
+  description: string | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
   onProjectClick: (id: number) => void;
   onProjectPause: (id: number, status: ProjectCardProps["status"]) => void;
   onDeleteClick: (id: number, name: string) => void;
@@ -194,7 +194,7 @@ const ProjectCard = ({
         )}
       </div>
       {status === "PAUSED" && (
-        <span className="text-xs flex items-center gap-1 text-yellow-600/70">
+        <span className="text-xs flex items-center gap-1 text-orange-400/70">
           <PauseIcon className="h-3 w-3" />
           Paused
         </span>
@@ -235,7 +235,7 @@ const ProjectMenu = ({
     </DropdownMenuTrigger>
     <DropdownMenuContent align="start" onClick={(e) => e.stopPropagation()}>
       <DropdownMenuItem
-        onClick={(e) => {
+        onClick={async (e) => {
           e.stopPropagation();
           onPause();
         }}

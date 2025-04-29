@@ -1,6 +1,6 @@
 "use client";
-import { Copy, Eye, EyeOff, RefreshCw } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Copy, Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { useUpdateProjectKey } from "@/hooks/useProjects";
+import { updateProjectKeyAction } from "@/actions/projects";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -25,7 +25,6 @@ export const ApiKeyCard = ({
   projectId,
 }: ApiKeyCardProps) => {
   const router = useRouter();
-  const { isLoading, updateProjectKey, error } = useUpdateProjectKey();
 
   const [isVisible, setIsVisible] = useState(false);
 
@@ -38,25 +37,16 @@ export const ApiKeyCard = ({
     });
   };
 
-  useEffect(() => {
-    if (error) {
-      toast.error("Failed to regenerate API Key", {
-        description: "Please try again later.",
-      });
-    }
-  }, [error]);
-
   const handleRegenerateKey = async () => {
     if (!projectId) return;
-    const res = await updateProjectKey({
-      projectId,
+    toast.promise(updateProjectKeyAction(projectId), {
+      loading: "Regenerating API Key...",
+      success: () => {
+        router.refresh();
+        return "API Key regenerated successfully!";
+      },
+      error: "An error occurred while regenerating the API Key.",
     });
-    if (res?.status === "ok") {
-      router.refresh();
-      toast("API Key regenerated", {
-        description: "Your new API key has been generated successfully.",
-      });
-    }
   };
 
   const displayKey = isVisible
@@ -99,15 +89,7 @@ export const ApiKeyCard = ({
           <Copy className="mr-2 h-4 w-4" />
           Copy
         </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleRegenerateKey}
-          disabled={isLoading}
-        >
-          <RefreshCw
-            className={`mr-2 h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
-          />
+        <Button variant="outline" size="sm" onClick={handleRegenerateKey}>
           Regenerate
         </Button>
       </CardFooter>

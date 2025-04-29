@@ -5,7 +5,7 @@ export const ProjectTitle = ({
   description,
 }: {
   name?: string;
-  description?: string;
+  description?: string | null;
 }) => {
   return (
     <div className="p-6 py-4 pb-0">

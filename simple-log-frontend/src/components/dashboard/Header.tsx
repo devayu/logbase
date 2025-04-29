@@ -13,29 +13,25 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-
-import { logoutUser } from "@/services/auth";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { logOutUser } from "@/auth/actions/auth";
+import { UserSession } from "@/auth/core/session";
+import Link from "next/link";
 
 interface HeaderProps {
-  email?: string;
+  user?: UserSession | null;
 }
 
-export const Header = ({ email = "user@example.com" }: HeaderProps) => {
+export const Header = ({ user }: HeaderProps) => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
-  const initials = email
+  const initials = user?.email
     .split("@")[0]
     .split(".")
     .map((n) => n[0])
     .join("")
     .toUpperCase();
-
-  const handleLogout = () => {
-    logoutUser();
-    router.push("/");
-  };
 
   const navItems = [
     { icon: BarChart2, label: "Projects", href: "/projects" },
@@ -63,9 +59,11 @@ export const Header = ({ email = "user@example.com" }: HeaderProps) => {
                 <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
                   <BarChart2 className="h-5 w-5 text-primary-foreground" />
                 </div>
-                <span className="text-lg font-bold gradient-text">
-                  Simple Log
-                </span>
+                <Link href="/">
+                  <span className="text-lg font-bold gradient-text">
+                    Simple Log
+                  </span>
+                </Link>
               </div>
               <nav className="grid gap-2 py-4">
                 {navItems.map((item, index) => (
@@ -97,7 +95,9 @@ export const Header = ({ email = "user@example.com" }: HeaderProps) => {
           <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
             <BarChart2 className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="text-lg font-bold gradient-text">Simple Log</span>
+          <Link href="/">
+            <span className="text-lg font-bold gradient-text">Simple Log</span>
+          </Link>
         </div>
 
         <nav className="hidden md:ml-8 md:flex md:gap-4 lg:gap-6">
@@ -116,35 +116,41 @@ export const Header = ({ email = "user@example.com" }: HeaderProps) => {
 
         <div className="ml-auto flex items-center gap-2">
           <ThemeToggle></ThemeToggle>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="relative h-8 w-8 rounded-full"
-                aria-label="Open user menu"
-              >
-                <Avatar>
-                  <AvatarFallback>{initials}</AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <div className="flex items-center justify-start gap-2 p-2">
-                <div className="flex flex-col space-y-1 leading-none">
-                  <p className="font-medium">{email}</p>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="relative h-8 w-8 rounded-full"
+                  aria-label="Open user menu"
+                >
+                  <Avatar>
+                    <AvatarFallback>{initials}</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <div className="flex items-center justify-start gap-2 p-2">
+                  <div className="flex flex-col space-y-1 leading-none">
+                    <p className="font-medium">{user?.email}</p>
+                  </div>
                 </div>
-              </div>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => router.push("/profile")}>
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Profile</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleLogout}>
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => router.push("/profile")}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={async () => logOutUser()}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link href="/sign-in">
+              <Button>Login</Button>
+            </Link>
+          )}
         </div>
       </div>
     </header>

@@ -1,7 +1,7 @@
+import { getProjectAction } from "@/actions/projects";
 import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
 import { ProjectTitle } from "@/components/dashboard/ProjectTitle";
-import { Project } from "@/hooks/useProjects";
-import { Api } from "@/services/api";
+import { PausedBanner } from "@/components/PausedBanner";
 
 export default async function ProjectLayout({
   children,
@@ -11,15 +11,13 @@ export default async function ProjectLayout({
   params: Promise<{ projectId: number }>;
 }) {
   const { projectId } = await params;
-  const { data: project } = await Api.getInstance().fetch<Project>(
-    `/getProject/${projectId}`,
-    {
-      cache: "no-store",
-    }
-  );
+  const project = await getProjectAction(Number(projectId));
 
   return (
     <div className="flex flex-col min-h-screen">
+      {project?.status === "PAUSED" && (
+        <PausedBanner projectId={Number(projectId)} />
+      )}
       <DashboardTabs projectId={projectId}></DashboardTabs>
       <main className="flex-1">
         <ProjectTitle
