@@ -33,7 +33,6 @@ export class SimpleLogTracker {
    * @private
    */
   private constructor() {
-    // Restore state from window if available
     if (typeof window !== "undefined" && window.__simpleLogInstance) {
       const cached = window.__simpleLogInstance;
       this.apiKey = cached.apiKey;
@@ -50,16 +49,19 @@ export class SimpleLogTracker {
    * @static
    */
   public static getInstance(): SimpleLogTracker {
-    if (typeof window === "undefined") {
-      console.error("SimpleLogTracker must be used in the browser");
+    // Check if we're in a browser environment
+    const isBrowser = typeof window !== "undefined";
+
+    if (!isBrowser) {
+      // Create a new instance for server-side without storing it
+      return new SimpleLogTracker();
     }
 
-    // Check if already stored on window
+    // Browser-side singleton logic
     if (window.__simpleLogInstance) {
       return window.__simpleLogInstance;
     }
 
-    // Check module cache
     if (!this.instance) {
       this.instance = new SimpleLogTracker();
       window.__simpleLogInstance = this.instance;
