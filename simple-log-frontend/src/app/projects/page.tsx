@@ -2,8 +2,6 @@ import { getProjectsAction } from "@/actions/projects";
 import { getClientId } from "@/auth/currentUser";
 import { NewProjectCard } from "@/components/projects/NewProjectCard";
 import ProjectCards from "@/components/projects/ProjectCards";
-import { getServerProjects } from "@/hooks/useProjects";
-import { Loader2 } from "lucide-react";
 
 export const revalidate = 0;
 export const dynamic = "force-dynamic";

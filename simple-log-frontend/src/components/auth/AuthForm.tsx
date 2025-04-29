@@ -26,7 +26,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { loginUserAction, registerUserAction } from "@/auth/actions/auth";
-import { FromSubmitButton } from "@/components/FormSubmitButton";
+import { FormSubmitButton } from "@/components/FormSubmitButton";
 
 const authSchema = z.object({
   name: z.string().min(1),
@@ -156,10 +156,10 @@ export const AuthForm = () => {
               />
               <CardFooter>
                 <TabsContent value="login" className="mt-0 w-full">
-                  <FromSubmitButton loadingText="Logging in..." text="Login" />
+                  <FormSubmitButton loadingText="Logging in..." text="Login" />
                 </TabsContent>
                 <TabsContent value="register" className="mt-0 w-full">
-                  <FromSubmitButton
+                  <FormSubmitButton
                     loadingText="Creating account.."
                     text="Create account"
                   />

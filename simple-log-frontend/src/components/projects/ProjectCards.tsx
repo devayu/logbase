@@ -1,4 +1,5 @@
 "use client";
+import { toggleProjectStatusAction } from "@/actions/projects";
 import DeleteConfirmationDialog, {
   DeleteDialogState,
 } from "@/components/projects/DeleteProjectDialog";
@@ -50,9 +51,9 @@ export const ProjectCards = ({ projects }: { projects?: Project[] | null }) => {
     if (!projectId) return;
 
     toast.promise(
-      toggleProjectStatus({
+      toggleProjectStatusAction({
         projectId,
-        status,
+        currentStatus: status,
       }),
       {
         loading: `${status === "PAUSED" ? "Resuming" : "Pausing"} project...`,
@@ -236,7 +237,7 @@ const ProjectMenu = ({
     </DropdownMenuTrigger>
     <DropdownMenuContent align="start" onClick={(e) => e.stopPropagation()}>
       <DropdownMenuItem
-        onClick={(e) => {
+        onClick={async (e) => {
           e.stopPropagation();
           onPause();
         }}

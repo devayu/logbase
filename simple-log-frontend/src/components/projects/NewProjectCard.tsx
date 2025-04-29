@@ -1,6 +1,6 @@
 "use client";
 import { createProjectAction } from "@/actions/projects";
-import { FromSubmitButton } from "@/components/FormSubmitButton";
+import { FormSubmitButton } from "@/components/FormSubmitButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -101,7 +101,7 @@ export const NewProjectCard = () => {
               >
                 Cancel
               </Button>
-              <FromSubmitButton text="Create Project" />
+              <FormSubmitButton text="Create Project" />
             </DialogFooter>
           </form>
         </DialogContent>

@@ -3,11 +3,12 @@ import { Loader2 } from "lucide-react";
 import { useFormStatus } from "react-dom";
 
 type FromSubmitButtonProps = {
-  text: string;
+  children: React.ReactNode;
   loadingText?: string;
 } & ButtonProps;
-export const FromSubmitButton = (buttonProps: FromSubmitButtonProps) => {
-  const { text, loadingText = "Please wait..." } = buttonProps;
+
+export const FormSubmitButton = (buttonProps: FromSubmitButtonProps) => {
+  const { children, loadingText = "Please wait..." } = buttonProps;
   const { pending } = useFormStatus();
   return (
     <Button
@@ -16,7 +17,7 @@ export const FromSubmitButton = (buttonProps: FromSubmitButtonProps) => {
       {...buttonProps}
     >
       {pending && <Loader2 className="h-4 w-4 animate-spin" />}
-      {pending ? loadingText : text}
+      {pending ? loadingText : children}
     </Button>
   );
 };

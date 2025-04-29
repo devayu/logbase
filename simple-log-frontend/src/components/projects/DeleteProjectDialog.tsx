@@ -1,6 +1,6 @@
 "use client";
 import { deleteProjectAction } from "@/actions/projects";
-import { FromSubmitButton } from "@/components/FormSubmitButton";
+import { FormSubmitButton } from "@/components/FormSubmitButton";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -41,6 +41,7 @@ const DeleteConfirmationDialog = ({
       <DialogContent>
         <form
           action={async () => {
+            if (!deleteDialog.id) return;
             const deletedProject = await deleteProjectAction(deleteDialog.id);
             if (deletedProject) {
               onSuccess();
@@ -79,11 +80,12 @@ const DeleteConfirmationDialog = ({
             >
               Cancel
             </Button>
-            <FromSubmitButton
-              text="Delete Project"
+            <FormSubmitButton
               variant="destructive"
               disabled={deleteDialog.projectName !== confirmationName}
-            ></FromSubmitButton>
+            >
+              Delete Project
+            </FormSubmitButton>
           </DialogFooter>
         </form>
       </DialogContent>
