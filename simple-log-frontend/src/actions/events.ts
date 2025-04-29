@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
-import { ProjectIdSchema, ProjectIdT } from "@/prismaTypes";
+import { ProjectIdSchema, ProjectIdT } from "@/types";
 
 export const getAllEventsAction = async (project_id: ProjectIdT) => {
   const { success } = ProjectIdSchema.safeParse(project_id);
