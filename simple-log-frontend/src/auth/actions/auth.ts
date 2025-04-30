@@ -71,7 +71,6 @@ export const loginUserAction = async (loginUser: FormData) => {
 };
 
 export const logOutUser = async () => {
-  console.log("logu out");
   await removeUserFromSession(await cookies());
   redirect("/");
 };

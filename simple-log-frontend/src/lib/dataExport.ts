@@ -7,7 +7,6 @@ export const csvExport = (data: Record<string, any>[], fileName: string) => {
     filename: fileName,
     replaceUndefinedWith: "na",
   });
-  console.log(data);
   const csv = generateCsv(csvConfig)(data);
   return download(csvConfig)(csv);
 };

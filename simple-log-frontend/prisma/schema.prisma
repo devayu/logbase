@@ -7,28 +7,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum ProjectStatus {
-  ACTIVE
-  PAUSED
-}
-
-enum ProjectPlan {
-  BASIC
-  PREMIUM
-}
-
 model Project {
-  id          Int           @id @default(autoincrement())
-  name        String        @db.VarChar(255)
-  description String?       @db.VarChar(255)
-  clientId    String?       @map("client_id") @db.VarChar(64)
-  apiKey      String        @unique @default("") @map("api_key") @db.VarChar(100)
-  client      Client?       @relation(fields: [clientId], references: [id])
-  status      ProjectStatus @default(ACTIVE)
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime      @default(now()) @updatedAt @map("updated_at")
-  plan        ProjectPlan   @default(BASIC)
-  events      Event[]
+  id                Int           @id @default(autoincrement())
+  name              String        @db.VarChar(255)
+  description       String?       @db.VarChar(255)
+  clientId          String?       @map("client_id") @db.VarChar(64)
+  apiKey            String        @unique @default("") @map("api_key") @db.VarChar(100)
+  status            ProjectStatus @default(ACTIVE)
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @default(now()) @updatedAt @map("updated_at")
+  plan              ProjectPlan   @default(BASIC)
+  monitoringEnabled Boolean       @default(false) @map("monitoring_enabled")
+  monitoringUrl     String?       @map("monitoring_url") @db.VarChar(255)
+  events            Event[]
+  client            Client?       @relation(fields: [clientId], references: [id])
+  UptimeLog         UptimeLog[]
 
   @@index([clientId])
 }
@@ -52,4 +45,26 @@ model Client {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @default(now()) @updatedAt @map("updated_at")
   projects  Project[]
+}
+
+model UptimeLog {
+  id           Int      @id @default(autoincrement())
+  projectId    Int?     @map("project_id")
+  status       Int      @default(0)
+  checkedAt    DateTime @default(now())
+  responseTime Int?
+  isOffline    Boolean  @default(false)
+  project      Project? @relation(fields: [projectId], references: [id])
+
+  @@index([projectId])
+}
+
+enum ProjectStatus {
+  ACTIVE
+  PAUSED
+}
+
+enum ProjectPlan {
+  BASIC
+  PREMIUM
 }

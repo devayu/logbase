@@ -109,7 +109,7 @@ export const Overview = ({
       <EventsTable
         events={eventOverview?.events}
         count={5}
-        projectName={eventOverview?.projectName}
+        projectName={eventOverview?.metadata.name}
       />
     </div>
   );

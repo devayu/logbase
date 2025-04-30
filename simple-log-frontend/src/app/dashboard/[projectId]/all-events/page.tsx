@@ -10,7 +10,7 @@ export default async function Home({
   const data = await getAllEventsAction(Number(projectId));
 
   return (
-    <div className="p-4">
+    <div className="p-6">
       <EventsTable
         events={data?.events}
         heading="All Events"
