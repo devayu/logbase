@@ -1,6 +1,5 @@
 import { getProjectAction } from "@/actions/projects";
 import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
-import { ProjectTitle } from "@/components/dashboard/ProjectTitle";
 import { PausedBanner } from "@/components/PausedBanner";
 
 export default async function ProjectLayout({

@@ -258,6 +258,7 @@ async function canScheduleMonitoring(projectId: number) {
 
     return false;
   } catch (error) {
+    console.error(error);
     return false;
   }
 }

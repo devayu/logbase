@@ -1,19 +1,7 @@
 import { prisma } from "@/db/db";
-import { verifySignature } from "@upstash/qstash/nextjs";
+import { verifySignatureAppRouter } from "@upstash/qstash/nextjs";
 import { NextResponse } from "next/server";
-export async function POST(req: Request) {
-  const signature = req.headers.get("upstash-signature") || "";
-
-  const isValid = await verifySignature({
-    signature,
-    body: await req.text(),
-    currentDate: new Date().toISOString(),
-  });
-
-  if (!isValid) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
+export const POST = verifySignatureAppRouter(async (req: Request) => {
   const queryParams = new URL(req.url).searchParams;
   const projectId = queryParams.get("id");
   if (!projectId) {
@@ -27,8 +15,6 @@ export async function POST(req: Request) {
       },
     });
 
-    console.log(monitoredProjects);
-    // Check each project's endpoint
     for (const project of monitoredProjects) {
       const startTime = Date.now();
       try {
@@ -45,7 +31,7 @@ export async function POST(req: Request) {
             checkedAt: new Date(),
           },
         });
-        console.log("uptimeLog", uptimeLog);
+
         if (!uptimeLog)
           return NextResponse.json({
             success: false,
@@ -79,7 +65,7 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   }
-}
+});
 
 export const config = {
   api: {

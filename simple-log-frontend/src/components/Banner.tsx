@@ -2,7 +2,6 @@
 import { AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
 import { AlertCircle } from "lucide-react";
 
@@ -11,7 +10,6 @@ type BannerProps = {
   className?: string;
   title?: string;
   desc?: string;
-  action?: React.ReactNode;
   buttonTitle?: string;
   buttonIcon?: React.ReactNode;
   asyncAction?: () => Promise<void>;
@@ -35,7 +33,6 @@ export const Banner = (props: BannerProps) => {
   const {
     title,
     desc,
-    action,
     variant,
     className,
     asyncAction,

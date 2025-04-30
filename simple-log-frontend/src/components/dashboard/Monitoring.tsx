@@ -6,24 +6,9 @@ import {
   updateProjectMonitoringUrl,
   UptimeOverviewT,
 } from "@/actions/monitoring";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/dashboard/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  cn,
-  formatDate,
-  getColorForEventType,
-  normalizeUrl,
-} from "@/lib/utils";
-import { Project } from "@prisma/client";
-import { Edit, Info, Pause, Play } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { MonitoringChart } from "./MonitoringChart";
-import { MonitoringStats } from "./MonitoringStats";
-import { StatusBadge } from "@/components/dashboard/StatusBadge";
-import { MonitoringUrlTooltip } from "@/components/dashboard/MonitoringUrlTooltip";
 import { Input } from "@/components/ui/input";
 import {
   Tooltip,
@@ -31,6 +16,19 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  cn,
+  formatDate,
+  getColorForEventType,
+  normalizeUrl,
+} from "@/lib/utils";
+import { Project } from "@prisma/client";
+import { Edit, Pause, Play } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { MonitoringChart } from "./MonitoringChart";
+import { MonitoringStats } from "./MonitoringStats";
 
 const Monitoring = ({
   project,
@@ -55,6 +53,7 @@ const Monitoring = ({
     if (!monitoringOverview) return;
     const data = generateData();
     setChartData(data);
+    /* eslint-disable react-hooks/exhaustive-deps */
   }, [timeRange]);
 
   const generateData = () => {
