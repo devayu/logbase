@@ -1,8 +1,13 @@
 "use client";
-import { useState } from "react";
+import { BarChart2, LogOut, Menu, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Bell, BarChart2, Settings, LogOut, Menu } from "lucide-react";
+import { useState } from "react";
 
+import { logOutUser } from "@/auth/actions/auth";
+import { UserSession } from "@/auth/core/session";
+import { LogbaseLogo } from "@/components/LogbaseLogo";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,13 +16,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { logOutUser } from "@/auth/actions/auth";
-import { UserSession } from "@/auth/core/session";
 import Link from "next/link";
-
 interface HeaderProps {
   user?: UserSession | null;
 }
@@ -33,11 +33,7 @@ export const Header = ({ user }: HeaderProps) => {
     .join("")
     .toUpperCase();
 
-  const navItems = [
-    { icon: BarChart2, label: "Projects", href: "/projects" },
-    { icon: Bell, label: "Notifications", href: "/notifications" },
-    { icon: Settings, label: "Settings", href: "/settings" },
-  ];
+  const navItems = [{ icon: BarChart2, label: "Projects", href: "/projects" }];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -50,19 +46,14 @@ export const Header = ({ user }: HeaderProps) => {
               className="md:hidden"
               aria-label="Open mobile menu"
             >
-              <Menu className="h-5 w-5" />
+              <Menu className="h-5 w-5 -ml-4" />
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="pr-0">
             <div className="flex flex-col space-y-4 pr-6 pt-6">
               <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
-                  <BarChart2 className="h-5 w-5 text-primary-foreground" />
-                </div>
                 <Link href="/">
-                  <span className="text-lg font-bold gradient-text">
-                    Logbase
-                  </span>
+                  <LogbaseLogo />
                 </Link>
               </div>
               <nav className="grid gap-2 py-4">
@@ -85,18 +76,9 @@ export const Header = ({ user }: HeaderProps) => {
           </SheetContent>
         </Sheet>
 
-        <div className="flex items-center gap-2 mr-4 md:hidden">
-          <div className="h-7 w-7 rounded-full bg-primary flex items-center justify-center">
-            <BarChart2 className="h-4 w-4 text-primary-foreground" />
-          </div>
-        </div>
-
-        <div className="hidden md:flex md:items-center md:gap-2">
-          <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
-            <BarChart2 className="h-5 w-5 text-primary-foreground" />
-          </div>
+        <div className="flex md:items-center md:gap-2">
           <Link href="/">
-            <span className="text-lg font-bold gradient-text">Logbase</span>
+            <LogbaseLogo />
           </Link>
         </div>
 

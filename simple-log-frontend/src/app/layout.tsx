@@ -3,17 +3,11 @@ import { Header } from "@/components/dashboard/Header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Space_Grotesk } from "next/font/google";
 import { cookies } from "next/headers";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const space = Space_Grotesk({
   subsets: ["latin"],
 });
 
@@ -31,7 +25,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-gradient-to-br from-background via-background to-accent/30`}
+        className={`${space.className} antialiased min-h-screen bg-gradient-to-br from-background via-background to-accent/30`}
       >
         <ThemeProvider
           attribute="class"

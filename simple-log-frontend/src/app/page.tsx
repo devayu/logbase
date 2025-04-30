@@ -2,6 +2,7 @@ import { BarChart2, Code, Shield, Zap } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { LogbaseLogo } from "@/components/LogbaseLogo";
 
 export default function Home() {
   const features = [
@@ -34,19 +35,22 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col">
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-br from-background via-background to-accent/30">
-          <div className="container px-4 md:px-6">
+        <section className="w-full py-12 md:py-24 lg:py-32">
+          <div className="container px-4 md:px-6 mx-auto">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
-                  Insight into Your{" "}
+              <div className="space-y-2 relative">
+                <div className="absolute -inset-x-4 -inset-y-4 border border-orange-500/50 -rotate-1"></div>
+                <div className="absolute -inset-x-4 -inset-y-4 border border-orange-500/20 rotate-1"></div>
+                <h1 className="relative text-3xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
+                  Industrial-Grade{" "}
+                  <span className="gradient-text">Analytics</span>
                 </h1>
-                <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
+                <p className="relative mx-auto max-w-[700px] text-muted-foreground md:text-xl">
                   Track, analyze, and optimize your application with our
                   powerful yet simple analytics platform.
                 </p>
               </div>
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 mt-4">
                 <Button size="lg" variant="outline">
                   View Demo
                 </Button>
@@ -58,8 +62,8 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="w-full py-12 md:py-24 bg-accent/10">
-          <div className="container px-4 md:px-6">
+        <section className="w-full py-12 md:py-24 bg-accent/10 ">
+          <div className="container px-4 md:px-6 mx-auto">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {features.map((feature, index) => (
                 <div
@@ -80,7 +84,7 @@ export default function Home() {
         </section>
 
         <section className="w-full py-12 md:py-24 lg:py-32">
-          <div className="container px-4 md:px-6">
+          <div className="container px-4 md:px-6 mx-auto">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
@@ -101,13 +105,8 @@ export default function Home() {
         </section>
       </main>
       <footer className="w-full border-t py-6">
-        <div className="container flex flex-col items-center justify-center gap-4 px-4 text-center md:px-6">
-          <div className="flex items-center gap-2">
-            <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center">
-              <BarChart2 className="h-3 w-3 text-primary-foreground" />
-            </div>
-            <p className="text-sm font-medium">Logbase</p>
-          </div>
+        <div className="container flex flex-col items-center justify-center gap-4 px-4 text-center md:px-6 mx-auto">
+          <LogbaseLogo />
           <p className="text-xs text-muted-foreground">
             &copy; 2025 Logbase. All rights reserved.
           </p>

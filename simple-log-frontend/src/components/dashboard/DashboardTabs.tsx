@@ -19,32 +19,44 @@ export const DashboardTabs = ({ projectId }: { projectId: number }) => {
     })?.[0] ?? "overview";
   return (
     <div className="border-b">
-      <div className="flex h-16 items-center px-4">
+      <div className="p-2 py-4">
         <Tabs defaultValue={defaultValue} className="w-full">
-          <TabsList className=" bg-transparent">
-            <TabsTrigger value="overview" asChild>
-              <Link href={`/dashboard/${projectId}/overview`}>
+          <TabsList className="bg-transparent gap-2">
+            <TabsTrigger value="overview" asChild className="w-full">
+              <Link
+                href={`/dashboard/${projectId}/overview`}
+                className="flex items-center gap-2 justify-center"
+              >
                 <LayoutDashboard className="h-4 w-4" />
-                Overview
+                <span className="hidden md:inline">Overview</span>
               </Link>
             </TabsTrigger>
 
-            <TabsTrigger value="all-events" asChild>
-              <Link href={`/dashboard/${projectId}/all-events`}>
+            <TabsTrigger value="all-events" asChild className="w-full">
+              <Link
+                href={`/dashboard/${projectId}/all-events`}
+                className="flex items-center gap-2 justify-center"
+              >
                 <Activity className="h-4 w-4" />
-                All events
+                <span className="hidden md:inline">All events</span>
               </Link>
             </TabsTrigger>
-            <TabsTrigger value="monitoring" asChild>
-              <Link href={`/dashboard/${projectId}/monitoring`}>
+            <TabsTrigger value="monitoring" asChild className="w-full">
+              <Link
+                href={`/dashboard/${projectId}/monitoring`}
+                className="flex items-center gap-2 justify-center"
+              >
                 <MonitorCheck className="h-4 w-4" />
-                Monitoring
+                <span className="hidden md:inline">Monitoring</span>
               </Link>
             </TabsTrigger>
-            <TabsTrigger value="settings" asChild>
-              <Link href={`/dashboard/${projectId}/settings/general`}>
+            <TabsTrigger value="settings" asChild className="w-full">
+              <Link
+                href={`/dashboard/${projectId}/settings/general`}
+                className="flex items-center gap-2 justify-center"
+              >
                 <Settings className="h-4 w-4" />
-                Settings
+                <span className="hidden md:inline">Settings</span>
               </Link>
             </TabsTrigger>
           </TabsList>

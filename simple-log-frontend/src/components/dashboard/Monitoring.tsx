@@ -173,7 +173,7 @@ const Monitoring = ({
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent className="bg-muted">
-                          <p className=" text-white">
+                          <p className="text-white">
                             This is the url which is currenly being monitored,
                             click to edit.
                           </p>
@@ -184,37 +184,41 @@ const Monitoring = ({
                 )}
               </div>
 
-              <div className="flex items-center gap-3 mt-4">
+              <div className="flex md:items-center gap-3 md:mt-4 md:flex-row flex-col">
                 <p className="text-sm text-muted-foreground mt-1">
                   Last checked:{" "}
-                  {formatDate(
-                    monitoringOverview?.lastCheckedAt ?? new Date(),
-                    true,
-                    true
-                  )}
+                  {monitoringOverview?.lastCheckedAt
+                    ? formatDate(
+                        monitoringOverview?.lastCheckedAt ?? new Date(),
+                        true,
+                        true
+                      )
+                    : "---"}
                 </p>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleMonitoringToggle}
-                  className="flex items-center gap-2"
-                >
-                  {isPaused ? (
-                    <>
-                      <Play className="h-4 w-4" />
-                      Resume Monitoring
-                    </>
-                  ) : (
-                    <>
-                      <Pause className="h-4 w-4" />
-                      Pause Monitoring
-                    </>
-                  )}
-                </Button>
-                <StatusBadge
-                  isDown={monitoringOverview?.isOffline}
-                  isPaused={!project?.monitoringEnabled}
-                ></StatusBadge>
+                <div className="flex justify-between gap-4">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleMonitoringToggle}
+                    className="flex items-center gap-2 px-0"
+                  >
+                    {isPaused ? (
+                      <>
+                        <Play className="h-4 w-4" />
+                        Resume Monitoring
+                      </>
+                    ) : (
+                      <>
+                        <Pause className="h-4 w-4" />
+                        Pause Monitoring
+                      </>
+                    )}
+                  </Button>
+                  <StatusBadge
+                    isDown={monitoringOverview?.isOffline}
+                    isPaused={!project?.monitoringEnabled}
+                  ></StatusBadge>
+                </div>
               </div>
             </div>
           </div>
