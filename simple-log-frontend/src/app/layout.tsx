@@ -28,7 +28,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const currentUser = await getUserFromSession(await cookies());
-  console.log(currentUser);
   return (
     <html lang="en" suppressHydrationWarning>
       <body

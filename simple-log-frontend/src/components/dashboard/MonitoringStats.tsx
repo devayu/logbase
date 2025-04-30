@@ -6,18 +6,24 @@ interface MonitoringStatsProps {
   monitoringOverview: UptimeOverviewT | null;
 }
 
-export const MonitoringStats = ({ monitoringOverview }: MonitoringStatsProps) => {
+export const MonitoringStats = ({
+  monitoringOverview,
+}: MonitoringStatsProps) => {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card className="gap-4">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm text-muted-foreground font-normal">
-            Currently up for
+            {monitoringOverview?.isOffline
+              ? "Time up for before down"
+              : "Currently up for"}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {formatDuration(monitoringOverview?.currentlyUpFor ?? 0)}
+            {monitoringOverview?.isOffline
+              ? formatDuration(monitoringOverview?.timeUpForBeforeDown ?? 0)
+              : formatDuration(monitoringOverview?.currentlyUpFor ?? 0)}
           </div>
         </CardContent>
       </Card>
@@ -30,20 +36,7 @@ export const MonitoringStats = ({ monitoringOverview }: MonitoringStatsProps) =>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {monitoringOverview?.availabilityPercentage}%
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="gap-4">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm text-muted-foreground font-normal">
-            Last up for
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">
-            {formatDuration(monitoringOverview?.timeUpForBeforeDown ?? 0)}
+            {monitoringOverview?.availabilityPercentage?.toFixed(0)}%
           </div>
         </CardContent>
       </Card>

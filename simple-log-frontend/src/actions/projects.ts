@@ -1,4 +1,5 @@
 "use server";
+import { deleteMonitoringSchedule } from "@/actions/monitoring";
 import { getClientId } from "@/auth/currentUser";
 import { prisma } from "@/db/db";
 import { generateApiKey } from "@/lib/utils";
@@ -78,6 +79,8 @@ export const deleteProjectAction = async (project_id: ProjectIdT) => {
         clientId,
       },
     });
+
+    await deleteMonitoringSchedule(project_id);
     return project;
   } catch (error) {
     console.log(error);

@@ -36,6 +36,7 @@ export async function updateProjectMonitoringUrl(
   });
 
   if (!updatedProject) return null;
+  await scheduleMonitoring(projectId);
   return updatedProject.monitoringUrl;
 }
 export async function getUptimeLogAction(projectId: ProjectIdT) {
@@ -151,6 +152,20 @@ export async function getUptimeOverviewAction(projectId: ProjectIdT) {
         },
       })
     : null;
+  const lastDownBeforeUp = lastUpBeforeDown
+    ? await prisma.uptimeLog.findFirst({
+        where: {
+          projectId: projectId,
+          isOffline: false,
+          checkedAt: {
+            lt: lastUpBeforeDown.checkedAt,
+          },
+        },
+        orderBy: {
+          checkedAt: "desc",
+        },
+      })
+    : null;
 
   const timeSiteWentDown = logs.filter((log) => log.isOffline === true).length;
   const availabilityPercentage = (logs.length - timeSiteWentDown) / logs.length;
@@ -160,21 +175,20 @@ export async function getUptimeOverviewAction(projectId: ProjectIdT) {
     logs
       .filter((log) => log.responseTime !== null)
       .reduce((acc, log) => acc + log.responseTime!, 0) / logs.length;
-  const timeUpForBeforeDown =
-    lastDownLog && lastUpBeforeDown
-      ? lastDownLog.checkedAt.getTime() - lastUpBeforeDown.checkedAt.getTime()
-      : 0;
-
   const currentlyUpFor =
     lastDownLog?.checkedAt && !isOffline
       ? lastCheckedAt.getTime() - lastDownLog.checkedAt.getTime()
       : 0;
-
+  const timeUpForBeforeDown =
+    lastDownBeforeUp && lastUpBeforeDown
+      ? lastUpBeforeDown.checkedAt.getTime() -
+        lastDownBeforeUp.checkedAt.getTime()
+      : 0;
   return {
     availabilityPercentage: availabilityPercentage * 100,
     timeSiteWentDown,
     lastCheckedAt,
-    averageResponseTime,
+    averageResponseTime: Math.round(averageResponseTime),
     isOffline,
     timeUpForBeforeDown,
     currentlyUpFor,
@@ -193,16 +207,12 @@ export async function scheduleMonitoring(projectId: number) {
   try {
     const canSchedule = await canScheduleMonitoring(projectId);
     if (!canSchedule) {
-      console.log(
-        "Monitoring cannot be scheduled, check if a monitoring url is set"
-      );
-      return false;
+      throw "Monitoring cannot be scheduled, check if a monitoring url is set";
     }
 
     const isResumed = await resumeMonitoring(projectId);
     if (!isResumed) {
-      console.log("Monitoring cannot be resumed");
-      return false;
+      throw "Monitoring cannot be resumed";
     }
     const { scheduleId } = await qstash.schedules.create({
       scheduleId: `monitoring-${projectId}`,
@@ -216,7 +226,7 @@ export async function scheduleMonitoring(projectId: number) {
 
     console.log("Monitoring schedule created successfully");
   } catch (error) {
-    console.error("Failed to schedule monitoring:", error);
+    throw error;
   }
 }
 
@@ -237,7 +247,7 @@ export async function deleteMonitoringSchedule(projectId: number) {
     }
     console.log("Monitoring schedule deleted successfully");
   } catch (error) {
-    console.error("Failed to delete monitoring:", error);
+    throw error;
   }
 }
 
@@ -258,8 +268,7 @@ async function canScheduleMonitoring(projectId: number) {
 
     return false;
   } catch (error) {
-    console.error(error);
-    return false;
+    throw error;
   }
 }
 

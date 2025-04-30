@@ -108,11 +108,10 @@ const Monitoring = ({
     );
   };
   const hasChanges =
-    project?.monitoringUrl &&
+    project?.monitoringUrl !== undefined &&
     project.monitoringUrl !== editUrl &&
     editUrl !== "";
 
-  console.log(hasChanges);
   return (
     <div className="w-full gap-4 flex flex-col">
       <MonitoringStats monitoringOverview={monitoringOverview} />
@@ -149,7 +148,10 @@ const Monitoring = ({
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => setIsEditing(false)}
+                      onClick={() => {
+                        setIsEditing(false);
+                        setEditUrl("");
+                      }}
                     >
                       Cancel
                     </Button>
