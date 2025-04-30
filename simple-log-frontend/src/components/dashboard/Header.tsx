@@ -61,7 +61,7 @@ export const Header = ({ user }: HeaderProps) => {
                 </div>
                 <Link href="/">
                   <span className="text-lg font-bold gradient-text">
-                    Simple Log
+                    Logbase
                   </span>
                 </Link>
               </div>
@@ -96,7 +96,7 @@ export const Header = ({ user }: HeaderProps) => {
             <BarChart2 className="h-5 w-5 text-primary-foreground" />
           </div>
           <Link href="/">
-            <span className="text-lg font-bold gradient-text">Simple Log</span>
+            <span className="text-lg font-bold gradient-text">Logbase</span>
           </Link>
         </div>
 

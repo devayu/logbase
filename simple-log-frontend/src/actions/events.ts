@@ -10,6 +10,7 @@ export const getAllEventsAction = async (project_id: ProjectIdT) => {
   const project = await prisma.project.findFirst({
     select: {
       name: true,
+      description: true,
     },
     where: {
       id: project_id,
@@ -40,6 +41,7 @@ export const getEventsOverviewAction = async (project_id: ProjectIdT) => {
   const project = await prisma.project.findFirst({
     select: {
       name: true,
+      description: true,
     },
     where: {
       id: project_id,
@@ -97,7 +99,10 @@ export const getEventsOverviewAction = async (project_id: ProjectIdT) => {
       : ((currentActiveUsers - previousActiveUsers) / previousActiveUsers) *
         100;
   return {
-    projectName: project.name,
+    metadata: {
+      name: project.name,
+      description: project.description,
+    },
     events: currentMonthEvents,
     overview: {
       totalEvents: currentCount,

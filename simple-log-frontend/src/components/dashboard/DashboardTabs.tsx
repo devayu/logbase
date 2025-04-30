@@ -1,9 +1,15 @@
 "use client";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Activity, LayoutDashboard, Settings } from "lucide-react";
+import {
+  Activity,
+  LayoutDashboard,
+  MonitorCheck,
+  Settings,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-const DEFAULT_VALUES = ["overview", "all-events", "settings"];
+const DEFAULT_VALUES = ["overview", "all-events", "settings", "monitoring"];
+
 export const DashboardTabs = ({ projectId }: { projectId: number }) => {
   const pathName = usePathname();
 
@@ -27,6 +33,12 @@ export const DashboardTabs = ({ projectId }: { projectId: number }) => {
               <Link href={`/dashboard/${projectId}/all-events`}>
                 <Activity className="h-4 w-4" />
                 All events
+              </Link>
+            </TabsTrigger>
+            <TabsTrigger value="monitoring" asChild>
+              <Link href={`/dashboard/${projectId}/monitoring`}>
+                <MonitorCheck className="h-4 w-4" />
+                Monitoring
               </Link>
             </TabsTrigger>
             <TabsTrigger value="settings" asChild>
