@@ -29,12 +29,18 @@ export async function middleware(request: NextRequest) {
 }
 
 async function middlewareAuth(request: NextRequest) {
+  const user = await getUserFromSession(await cookies());
+
+  if (request.nextUrl.pathname.startsWith("/sign-in")) {
+    if (user) {
+      return NextResponse.redirect(new URL(`/projects`, request.url));
+    }
+  }
   const isProtectedRoute = protectedRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );
 
   if (isProtectedRoute) {
-    const user = await getUserFromSession(await cookies());
     if (!user) {
       return NextResponse.redirect(new URL(`/sign-in`, request.url));
     }
