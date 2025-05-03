@@ -53,8 +53,8 @@ export default function Home() {
           <div className="container px-4 md:px-6 mx-auto">
             <div className="flex flex-col items-center justify-center space-y-4 text-center p-4">
               <div className="space-y-2 relative">
-                <div className="absolute -inset-x-4 -inset-y-4 border border-orange-500/50 -rotate-1"></div>
-                <div className="absolute -inset-x-4 -inset-y-4 border border-orange-500/20 rotate-1"></div>
+                <div className="absolute -inset-x-4 -inset-y-4 border border-orange-500/50 -rotate-1 hidden md:block"></div>
+                <div className="absolute -inset-x-4 -inset-y-4 border border-orange-500/20 rotate-1 hidden md:block"></div>
                 <h1 className="relative text-3xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
                   Industrial-Grade{" "}
                   <span className="relative inline-block">
