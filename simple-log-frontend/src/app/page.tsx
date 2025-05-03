@@ -120,8 +120,8 @@ export default function Home() {
               What can you track with Logbase?
             </h2>
             <p className="text-center text-muted-foreground mb-12 max-w-[600px] mx-auto">
-              Tracking events is as simple as one line of code. Here's what that
-              might look like:
+              {`Tracking events is as simple as one line of code. Here's what that
+              might look like:`}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* User Login Example */}
@@ -135,11 +135,11 @@ export default function Home() {
                   <span className="text-foreground">.</span>
                   <span className="text-orange-500">track</span>
                   <span className="text-foreground">(</span>
-                  <span className="text-red-500">'login'</span>
+                  <span className="text-red-500">{`'login'`}</span>
                   <span className="text-foreground">)</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Instantly appears in your dashboard's event stream
+                  {`Instantly appears in your dashboard's event stream`}
                 </p>
               </div>
 
@@ -148,7 +148,7 @@ export default function Home() {
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-3 h-3 rounded-sm bg-orange-500"></div>
                   <h3 className="text-xl font-semibold">
-                    User clicks on "Buy Now"
+                    {`User clicks on "Buy Now"`}
                   </h3>
                 </div>
                 <div className="bg-muted rounded-md p-4 font-mono text-sm mb-4">
@@ -156,11 +156,11 @@ export default function Home() {
                   <span className="text-foreground">.</span>
                   <span className="text-orange-500">track</span>
                   <span className="text-foreground">(</span>
-                  <span className="text-red-500">'buy_now_click'</span>
+                  <span className="text-red-500">{`'buy_now_click'`}</span>
                   <span className="text-foreground">, {`{`}</span>
                   <br />
                   <span className="text-foreground ml-4">plan: </span>
-                  <span className="text-red-500">'pro'</span>
+                  <span className="text-red-500">{`'pro'`}</span>
                   <span className="text-foreground">{`}`})</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
@@ -179,11 +179,11 @@ export default function Home() {
                   <span className="text-foreground">.</span>
                   <span className="text-orange-500">track</span>
                   <span className="text-foreground">(</span>
-                  <span className="text-red-500">'feature_toggle'</span>
+                  <span className="text-red-500">{`'feature_toggle'`}</span>
                   <span className="text-foreground">, {`{`}</span>
                   <br />
                   <span className="text-foreground ml-4">feature: </span>
-                  <span className="text-red-500">'dark_mode'</span>
+                  <span className="text-red-500">{`'dark_mode'`}</span>
                   <span className="text-foreground">{`}`})</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
