@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Settings, CreditCard, Key, Code } from "lucide-react";
+import { Code, CreditCard, Key, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -30,9 +30,9 @@ export const SettingsMenu = () => {
   const pathname = usePathname();
 
   return (
-    <div className="flex gap-8 mr-6">
+    <div className="gap-8 md:mr-6">
       <div className="w-64 shrink-0">
-        <div className="space-y-8">
+        <div className="space-y-8 grid grid-cols-2 md:block">
           {settingsTabs.map((tab) => (
             <Link href={tab.path} key={tab.id}>
               <Button

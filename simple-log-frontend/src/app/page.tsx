@@ -35,22 +35,34 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col">
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32">
+        <section className="w-full py-12 md:py-24 lg:py-32 overflow-hidden">
           <div className="container px-4 md:px-6 mx-auto">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2 relative">
-                <div className="absolute -inset-x-4 -inset-y-4 border border-orange-500/50 -rotate-1"></div>
-                <div className="absolute -inset-x-4 -inset-y-4 border border-orange-500/20 rotate-1"></div>
+                <div className="absolute -inset-x-4 -inset-y-4 border border-orange-500/50 -rotate-1 hidden md:block"></div>
+                <div className="absolute -inset-x-4 -inset-y-4 border border-orange-500/20 rotate-1 hidden md:block"></div>
                 <h1 className="relative text-3xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
                   Industrial-Grade{" "}
-                  <span className="gradient-text">Analytics</span>
+                  <span className="relative inline-block">
+                    <span className="relative z-10">Analytics</span>
+                    <span className="absolute inset-0 bg-orange-500/10 -skew-x-12 animate-pulse"></span>
+                  </span>{" "}
+                  Made{" "}
+                  <span className="relative inline-block">
+                    <span className="relative z-10 bg-gradient-to-r from-orange-500 to-orange-600 text-transparent bg-clip-text">
+                      Simple
+                    </span>
+
+                    <span className="absolute bottom-0 left-0 w-full h-[2px] bg-orange-500 animate-pulse"></span>
+                  </span>
                 </h1>
-                <p className="relative mx-auto max-w-[700px] text-muted-foreground md:text-xl">
-                  Track, analyze, and optimize your application with our
-                  powerful yet simple analytics platform.
+                <p className="relative mx-auto max-w-[700px] text-muted-foreground md:text-xl mt-6">
+                  Gain deep insights, monitor performance, and optimize your app
+                  with real-time event tracking — all with a developer-first
+                  platform.
                 </p>
               </div>
-              <div className="flex flex-col sm:flex-row gap-4 mt-4">
+              <div className="flex md:flex-col flex-row gap-4 mt-4">
                 <Button size="lg" variant="outline">
                   View Demo
                 </Button>
@@ -62,18 +74,20 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="w-full py-12 md:py-24 bg-accent/10 ">
+        <section className="w-full py-12 md:py-24 bg-accent/10">
           <div className="container px-4 md:px-6 mx-auto">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {features.map((feature, index) => (
                 <div
                   key={index}
-                  className="flex flex-col items-center space-y-2 rounded-lg border border-border/30 p-6 shadow-sm transition-all hover:shadow-md"
+                  className="group flex flex-col items-center space-y-2 rounded-lg border border-border/30 p-6 shadow-sm transition-all hover:shadow-md hover:border-orange-500/30 hover:-translate-y-1 duration-300 ease-out"
                 >
-                  <div className="rounded-full bg-primary/10 p-2">
-                    <feature.icon className="h-6 w-6 text-primary" />
+                  <div className="rounded-full bg-primary/10 p-2 transition-all duration-300 group-hover:bg-orange-500/20 group-hover:scale-110">
+                    <feature.icon className="h-6 w-6 text-primary transition-colors duration-300 group-hover:text-orange-500" />
                   </div>
-                  <h3 className="text-xl font-medium">{feature.title}</h3>
+                  <h3 className="text-xl font-medium transition-colors duration-300 group-hover:text-orange-500">
+                    {feature.title}
+                  </h3>
                   <p className="text-sm text-muted-foreground text-center">
                     {feature.description}
                   </p>

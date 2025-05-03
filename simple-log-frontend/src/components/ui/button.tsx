@@ -1,6 +1,6 @@
-import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -24,7 +24,7 @@ const buttonVariants = cva(
         success: "bg-emerald-500",
       },
       size: {
-        default: "h-9 px-4 py-2 has-[>svg]:px-3",
+        default: "h-9 px-4 py-2",
         sm: "h-8 rounded-md gap-1.5 px-3",
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
         icon: "size-9",

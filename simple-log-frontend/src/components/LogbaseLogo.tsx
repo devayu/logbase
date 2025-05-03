@@ -1,7 +1,8 @@
+import { cn } from "@/lib/utils";
 import Image from "next/image";
-export const LogbaseLogo = () => {
+export const LogbaseLogo = ({ className }: { className?: string }) => {
   return (
-    <div className="flex gap-1 items-center">
+    <div className={cn("flex gap-1 items-center", className)}>
       <Image
         src="/logbase.svg"
         alt="Logbase Logo"

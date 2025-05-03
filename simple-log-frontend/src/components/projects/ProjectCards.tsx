@@ -20,13 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn, formatDate } from "@/lib/utils";
 import { Project } from "@prisma/client";
-import {
-  ArchiveX,
-  Ellipsis,
-  FileDownIcon,
-  PauseIcon,
-  PlayIcon,
-} from "lucide-react";
+import { ArchiveX, Ellipsis, PauseIcon, PlayIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -212,7 +206,6 @@ type DropdownMenuItems = {
 
 const ProjectMenu = ({
   status,
-  plan,
   onDelete,
   onPause,
 }: {
@@ -242,16 +235,6 @@ const ProjectMenu = ({
       >
         {status === "ACTIVE" ? <PauseIcon></PauseIcon> : <PlayIcon></PlayIcon>}
         {status === "ACTIVE" ? "Pause Project" : "Resume Project"}
-      </DropdownMenuItem>
-      <DropdownMenuItem
-        onClick={(e) => {
-          e.stopPropagation();
-          onDelete();
-        }}
-        disabled={plan === "BASIC"}
-      >
-        <FileDownIcon></FileDownIcon>
-        {`Export Data ${plan === "BASIC" ? "(Premium)" : ""}`}
       </DropdownMenuItem>
       <DropdownMenuItem
         className="text-destructive cursor-pointer"

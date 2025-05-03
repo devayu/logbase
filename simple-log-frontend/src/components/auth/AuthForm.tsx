@@ -26,6 +26,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { loginUserAction, registerUserAction } from "@/auth/actions/auth";
 import { FormSubmitButton } from "@/components/FormSubmitButton";
+import { LogbaseLogo } from "@/components/LogbaseLogo";
 
 const authSchema = z.object({
   name: z.string().min(1),
@@ -48,12 +49,11 @@ export const AuthForm = () => {
     },
   });
 
-  console.log(selectedTab);
   return (
-    <Card className="w-full max-w-md border border-border/30 shadow-lg">
+    <Card className="w-full max-w-md border border-border/30 shadow-lg p-6">
       <CardHeader>
         <CardTitle className="text-center text-2xl font-bold">
-          <span className="gradient-text">Simple Log</span>
+          <LogbaseLogo className=" justify-center"></LogbaseLogo>
         </CardTitle>
       </CardHeader>
       <Tabs
@@ -66,7 +66,7 @@ export const AuthForm = () => {
           <TabsTrigger value="login">Login</TabsTrigger>
           <TabsTrigger value="register">Register</TabsTrigger>
         </TabsList>
-        <CardContent className="pt-6">
+        <CardContent className="pt-6 px-0">
           <Form {...form}>
             <form
               className="space-y-4"
@@ -144,13 +144,13 @@ export const AuthForm = () => {
                   </FormItem>
                 )}
               />
-              <CardFooter>
-                <TabsContent value="login" className="mt-0 w-full">
+              <CardFooter className="px-0 items-center justify-center">
+                <TabsContent value="login" className="mt-0 flex-[0]">
                   <FormSubmitButton loadingText="Logging in...">
                     Login
                   </FormSubmitButton>
                 </TabsContent>
-                <TabsContent value="register" className="mt-0 w-full">
+                <TabsContent value="register" className="mt-0 flex-[0]">
                   <FormSubmitButton loadingText="Creating account..">
                     Create account
                   </FormSubmitButton>

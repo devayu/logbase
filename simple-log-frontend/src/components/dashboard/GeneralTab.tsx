@@ -80,7 +80,7 @@ export const GeneralTab = ({ project }: { project: Project | null }) => {
             />
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-col md:flex-row">
             <FormSubmitButton
               disabled={!hasChanges}
               variant="outline"

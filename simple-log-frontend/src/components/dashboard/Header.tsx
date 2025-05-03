@@ -16,7 +16,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import Link from "next/link";
 interface HeaderProps {
   user?: UserSession | null;
@@ -37,7 +42,7 @@ export const Header = ({ user }: HeaderProps) => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-14 items-center px-4 md:px-6">
+      <div className="flex h-14 items-center px-4 md:px-4">
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
             <Button
@@ -50,18 +55,18 @@ export const Header = ({ user }: HeaderProps) => {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="pr-0">
-            <div className="flex flex-col space-y-4 pr-6 pt-6">
-              <div className="flex items-center gap-2">
-                <Link href="/">
-                  <LogbaseLogo />
-                </Link>
-              </div>
-              <nav className="grid gap-2 py-4">
+            <SheetTitle className="flex items-center justify-between p-4">
+              <Link href="/">
+                <LogbaseLogo />
+              </Link>
+            </SheetTitle>
+            <div className="flex flex-col">
+              <nav className="grid gap-2">
                 {navItems.map((item, index) => (
                   <Button
                     key={index}
                     variant="ghost"
-                    className="justify-start"
+                    className="justify-start space-x-2"
                     onClick={() => {
                       setIsOpen(false);
                       router.push(item.href);

@@ -42,19 +42,20 @@ export const Banner = (props: BannerProps) => {
   return (
     <div className="p-4 pb-0">
       <div className={cn(bannerVariants({ variant }), className)}>
-        <div className="flex items-center">
-          <AlertCircle className="h-6 w-6 mr-4" />
-          <div className="flex flex-col">
-            <AlertTitle>{title}</AlertTitle>
-
-            <AlertDescription className="text-black">{desc}</AlertDescription>
+        <div className="flex items-center flex-col md:flex-row">
+          <div className="flex gap-2">
+            <AlertCircle className="h-6 w-6 mt-1" />
+            <div className="flex flex-col">
+              <AlertTitle>{title}</AlertTitle>
+              <AlertDescription className="text-black">{desc}</AlertDescription>
+            </div>
           </div>
           {asyncAction && (
             <Button
               onClick={asyncAction}
               type="submit"
               variant={variant}
-              className="ml-auto cursor-pointer"
+              className="ml-auto cursor-pointer mt-4 md:mt-0"
             >
               {buttonIcon}
               {buttonTitle}

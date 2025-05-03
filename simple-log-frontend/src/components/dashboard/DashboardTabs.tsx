@@ -2,15 +2,17 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Activity,
+  CircleArrowLeft,
   LayoutDashboard,
   MonitorCheck,
   Settings,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 const DEFAULT_VALUES = ["overview", "all-events", "settings", "monitoring"];
 
 export const DashboardTabs = ({ projectId }: { projectId: number }) => {
+  const router = useRouter();
   const pathName = usePathname();
 
   const defaultValue =
@@ -19,7 +21,16 @@ export const DashboardTabs = ({ projectId }: { projectId: number }) => {
     })?.[0] ?? "overview";
   return (
     <div className="border-b">
-      <div className="p-2 py-4">
+      <div className="p-4 flex items-center gap-2">
+        <span className="sr-only">Go back</span>
+        <CircleArrowLeft
+          className="w-6 h-6 cursor-pointer opacity-70"
+          onClick={() => {
+            router.push("/projects");
+          }}
+        ></CircleArrowLeft>
+        <div className="text-muted-foreground opacity-50 mr-2">|</div>
+
         <Tabs defaultValue={defaultValue} className="w-full">
           <TabsList className="bg-transparent gap-2">
             <TabsTrigger value="overview" asChild className="w-full">
