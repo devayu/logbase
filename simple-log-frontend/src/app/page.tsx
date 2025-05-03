@@ -37,10 +37,10 @@ export default function Home() {
       <main className="flex-1">
         <section className="w-full py-12 md:py-24 lg:py-32 overflow-hidden">
           <div className="container px-4 md:px-6 mx-auto">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center p-4">
               <div className="space-y-2 relative">
-                <div className="absolute -inset-x-4 -inset-y-4 border border-orange-500/50 -rotate-1 hidden md:block"></div>
-                <div className="absolute -inset-x-4 -inset-y-4 border border-orange-500/20 rotate-1 hidden md:block"></div>
+                <div className="absolute -inset-x-4 -inset-y-4 border border-orange-500/50 -rotate-1"></div>
+                <div className="absolute -inset-x-4 -inset-y-4 border border-orange-500/20 rotate-1"></div>
                 <h1 className="relative text-3xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
                   Industrial-Grade{" "}
                   <span className="relative inline-block">
@@ -62,7 +62,7 @@ export default function Home() {
                   platform.
                 </p>
               </div>
-              <div className="flex md:flex-col flex-row gap-4 mt-4">
+              <div className="flex flex-row gap-4 mt-4">
                 <Button size="lg" variant="outline">
                   View Demo
                 </Button>
